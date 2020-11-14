@@ -1,11 +1,12 @@
-package com.company.utils.figures;
+package com.company.figures;
 
-import com.company.utils.figuresInterfaces.EllipseDrawer;
-import com.company.utils.figuresInterfaces.PixelDrawer;
+import com.company.points.ScreenPoint;
+import com.company.utils.FigureDrawer;
+import com.company.utils.PixelDrawer;
 
 import java.awt.*;
 
-public class BresenhamEllipse implements EllipseDrawer {
+public class BresenhamEllipse implements FigureDrawer {
     PixelDrawer pixelDrawer;
     private int x, y, a, b;
     private Color color;
@@ -20,7 +21,7 @@ public class BresenhamEllipse implements EllipseDrawer {
     }
 
     @Override
-    public void drawEllipse() {
+    public void draw() {
         int _x = 0;
         int _y = b;
         int a_sqr = a * a; // a^2, a - большая полуось
@@ -66,7 +67,17 @@ public class BresenhamEllipse implements EllipseDrawer {
     }
 
     @Override
-    public void fillEllipse() {
+    public void moveMarkers(ScreenPoint start, ScreenPoint end) {
+
+    }
+
+    @Override
+    public boolean hitCursor(ScreenPoint screenPoint) {
+        return false;
+    }
+
+    @Override
+    public void fill() {
 
     }
     public void setParams(int x, int y, int a, int b, Color color){

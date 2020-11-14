@@ -1,10 +1,11 @@
 package com.company.figures;
 
-import com.company.utils.figuresInterfaces.CircleDrawer;
-import com.company.utils.figuresInterfaces.PixelDrawer;
+import com.company.points.ScreenPoint;
+import com.company.utils.FigureDrawer;
+import com.company.utils.PixelDrawer;
 import java.awt.*;
 
-public class BresenhamCircle implements CircleDrawer {
+public class BresenhamCircle implements FigureDrawer {
     PixelDrawer pixelDrawer;
     private int x, y, radius;
     private Color color;
@@ -18,7 +19,7 @@ public class BresenhamCircle implements CircleDrawer {
     }
 
     @Override
-    public void drawCircle() {
+    public void draw() {
         int _x = radius;
         //int _x = x;
         int _y = 0;
@@ -43,7 +44,17 @@ public class BresenhamCircle implements CircleDrawer {
     }
 
     @Override
-    public void fillBresenhamCircle() {
+    public void moveMarkers(ScreenPoint start, ScreenPoint end) {
+
+    }
+
+    @Override
+    public boolean hitCursor(ScreenPoint screenPoint) {
+        return false;
+    }
+
+    @Override
+    public void fill() {
 
     }
     public void setParams(int x, int y, int radius, Color color){

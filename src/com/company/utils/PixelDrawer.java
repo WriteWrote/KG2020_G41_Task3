@@ -1,4 +1,4 @@
-package com.company.utils.figuresInterfaces;
+package com.company.utils;
 
 import java.awt.*;
 

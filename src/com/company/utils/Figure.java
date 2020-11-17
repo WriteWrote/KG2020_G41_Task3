@@ -2,7 +2,7 @@ package com.company.utils;
 
 import com.company.points.ScreenPoint;
 
-public interface FigureDrawer {
+public interface Figure {
     void draw();
 
     void moveMarkers(ScreenPoint start, ScreenPoint end);

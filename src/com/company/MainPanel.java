@@ -7,6 +7,7 @@ import com.company.linedrawers.DDALineDrawer;
 import com.company.pixeldrawers.BufferedImagePixelDrawer;
 import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
+import com.company.utils.Figure;
 import com.company.utils.ScreenConverter;
 import com.company.utils.LineDrawer;
 import com.company.utils.PixelDrawer;
@@ -18,7 +19,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
+public class MainPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
     private ArrayList<Line> lines = new ArrayList<>();
     private ScreenConverter scrConv = new ScreenConverter(-2, 2, 4, 4, 800, 600);
     /*private Line yAxis = new Line(0, (int) -screenConverter.getRealH() / 2, 0, (int) screenConverter.getRealH() / 2);
@@ -29,8 +30,11 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     private ScreenPoint prevPoint;
     private Line currentLine;
 
-    private List<Arc> arcList = new ArrayList<>();
-    private Arc currentArc;
+//    private List<Arc> arcList = new ArrayList<>();
+//    private Arc currentArc;
+
+    private List<Figure> objects = new ArrayList<>();
+    private ScreenPoint currentCoordinates;
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -69,6 +73,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             prevPoint = new ScreenPoint(e.getX(), e.getY());
         else if (e.getButton() == MouseEvent.BUTTON1) {
             currentLine = new Line(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+            currentCoordinates = new ScreenPoint(e.getX(), e.getY());
         }
 
     }
@@ -88,6 +93,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
         this.addMouseWheelListener(this);
+        this.setFocusable(true);
+        this.addKeyListener(this);
     }
 
     @Override
@@ -101,28 +108,32 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         bi_g.setColor(Color.WHITE);
         bi_g.fillRect(0, 0, getWidth(), getHeight());
         bi_g.setColor(Color.black);
-        bi_g.fillOval(scrConv.r2s(new RealPoint(0.5,0.5)).getX(), scrConv.r2s(new RealPoint(0.5,0.5)).getY(), 150,150);
-        bi_g.drawString("MotherFuckers", new ScreenPoint(150,150).getX(), new ScreenPoint(150,150).getY());
-        bi_g.dispose();
         PixelDrawer pixelDrawer = new BufferedImagePixelDrawer(bi);
         LineDrawer ld = new DDALineDrawer(pixelDrawer);
 
         /*drawLine(ld, xAxis, Color.LIGHT_GRAY);
         drawLine(ld, yAxis, Color.LIGHT_GRAY);*/
-        drawCoordinats(ld, xAxis, yAxis, (int) scrConv.getRealW(), (int) scrConv.getRealH(), bi_g);
+        drawCoordinates(ld, xAxis, yAxis, (int) scrConv.getRealW(), (int) scrConv.getRealH(), bi_g);
         for (Line l : lines) {
             drawLine(ld, l, Color.BLACK);
         }
         if (currentLine != null)
             drawLine(ld, currentLine, Color.BLACK);
 
-        Arc testArc = new Arc(pixelDrawer, scrConv.r2s(new RealPoint(0.3, 0.5)), 100);
+        Arc testArc = new Arc(bi_g, pixelDrawer, scrConv.r2s(new RealPoint(0.3, 0.5)), 100);
         BresenhamCircle controlCircle = new BresenhamCircle(pixelDrawer,
-                scrConv.r2s(new RealPoint(0.3, 0.5)).getX(),scrConv.r2s(new RealPoint(0.3, 0.5)).getY(),
+                scrConv.r2s(new RealPoint(0.3, 0.5)).getX(), scrConv.r2s(new RealPoint(0.3, 0.5)).getY(),
                 100, Color.YELLOW);
         controlCircle.draw();
-        testArc.drawExpCircleArc(0,100, 100, 100);
+        testArc.drawExpCircleArc(0, 100, 100, 100);
 
+        if (isPressed == true) {
+            bi_g.setColor(Color.black);
+            bi_g.fillOval(new ScreenPoint(100, 100).getX(), new ScreenPoint(100, 100).getY(), 500, 500);
+            isPressed = false;
+        }
+
+        bi_g.dispose();
         g.drawImage(bi, 0, 0, null);
     }
 
@@ -130,13 +141,11 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         ld.drawLine(scrConv.r2s(l.getP1()), scrConv.r2s(l.getP2()), color);
     }
 
-    private void drawCoordinats(LineDrawer lineDrawer, Line xAxis, Line yAxis, int w, int h, Graphics graphics) {
+    private void drawCoordinates(LineDrawer lineDrawer, Line xAxis, Line yAxis, int w, int h, Graphics graphics) {
         Line xL = new Line(new RealPoint(xAxis.getP1().getX() - scrConv.getRealW() / 2, xAxis.getP1().getY()),
                 new RealPoint(xAxis.getP2().getX() + scrConv.getRealW() / 2, xAxis.getP2().getY()));
         Line yL = new Line(new RealPoint(yAxis.getP1().getX(), yAxis.getP1().getY() - scrConv.getRealH() / 2),
                 new RealPoint(yAxis.getP2().getX(), yAxis.getP2().getY() + scrConv.getRealH() / 2));
-        //drawLine(lineDrawer, xAxis, Color.LIGHT_GRAY);
-        //drawLine(lineDrawer, yAxis, Color.LIGHT_GRAY);
         drawLine(lineDrawer, xL, Color.LIGHT_GRAY);
         drawLine(lineDrawer, yL, Color.LIGHT_GRAY);
         for (int i = -w / 2; i < w / 2; i++) {
@@ -145,7 +154,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             Line xLine = new Line(rP_x1, rP_x2);
             drawLine(lineDrawer, xLine, Color.LIGHT_GRAY);
 
-            //rP_x1.setY(xAxis.getP1().getY() - 0.4);
             ScreenPoint sP = scrConv.r2s(rP_x1);
             graphics.drawString(Integer.toString(i), sP.getX(), sP.getY());
         }
@@ -154,6 +162,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             RealPoint rP_y2 = new RealPoint(yAxis.getP1().getX() + 0.2, i);
             Line yLine = new Line(rP_y1, rP_y2);
             drawLine(lineDrawer, yLine, Color.LIGHT_GRAY);
+            ScreenPoint sP = scrConv.r2s(rP_y2);
+            graphics.drawString(Integer.toString(i), sP.getX(), sP.getY());
         }
     }
 
@@ -172,6 +182,31 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
     @Override
     public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        if (e.getKeyChar() == 'v') {
+            isPressed = true;
+            repaint();
+        }
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_A) {
+            isPressed = true;
+            repaint();
+        }
+        /*if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            isPressed = true;
+            repaint();
+        }*/
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
 
     }
 }

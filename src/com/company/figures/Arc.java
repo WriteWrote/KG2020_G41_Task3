@@ -1,28 +1,30 @@
 package com.company.figures;
 
+import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
-import com.company.utils.FigureDrawer;
+import com.company.utils.Figure;
 import com.company.utils.PixelDrawer;
 import com.company.utils.markers.ScaleMarker;
 
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
-public class Arc implements FigureDrawer {
+public class Arc implements Figure {
     private PixelDrawer pixelDrawer;
-    private ScreenPoint point;
+    private RealPoint point;
     private int radius;
     private Color color = Color.BLACK;
-    private ScaleMarker[] scaleMarkers;
+    private ScaleMarker marker_UL, marker_UR, marker_DL, marker_DR;
 
-    public Arc(PixelDrawer pixelDrawer, ScreenPoint point, int radius) {
+    public Arc(Graphics g, PixelDrawer pixelDrawer, RealPoint point, int radius) {
         this.pixelDrawer = pixelDrawer;
         this.point = point;
         this.radius = radius;
-        scaleMarkers = new ScaleMarker[4];
-        // like in a watch
-        //scaleMarkers[0];
+        marker_UL = new ScaleMarker(g, point);
+        marker_DL = new ScaleMarker(g, new ScreenPoint(point.getX(), point.getY() + radius * 2));
+        marker_UR = new ScaleMarker(g, new ScreenPoint(point.getX() + 2 * radius, point.getY()));
+        marker_DR = new ScaleMarker(g, new ScreenPoint(point.getX() + 2 * radius, point.getY() + 2 * radius));
     }
 
     public Arc(PixelDrawer pixelDrawer, ScreenPoint point, int radius, Color color) {
@@ -98,6 +100,10 @@ public class Arc implements FigureDrawer {
 
     @Override
     public boolean hitCursor(ScreenPoint screenPoint) {
+        if (screenPoint.getX() < marker_UR.getX() && screenPoint.getX() > marker_UL.getX() &&
+                screenPoint.getY() > marker_DR.getY() && screenPoint.getY() < marker_UR.getY()) {
+            return true;
+        }
         return false;
     }
 
@@ -108,6 +114,17 @@ public class Arc implements FigureDrawer {
 
     @Override
     public void moveMarkers(ScreenPoint start, ScreenPoint end) {
-
+        int dx = start.getX() - end.getX();
+        int dy = start.getY() - end.getY();
+        List<ScaleMarker> list = new ArrayList<>();
+        list.add(marker_DL);
+        list.add(marker_DR);
+        list.add(marker_UL);
+        list.add(marker_UR);
+        for (ScaleMarker m :
+                list) {
+            m.setX(m.getX() + dx);
+            m.setY(m.getY() + dy);
+        }
     }
 }

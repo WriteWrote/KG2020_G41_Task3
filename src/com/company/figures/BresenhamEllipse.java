@@ -1,12 +1,12 @@
 package com.company.figures;
 
 import com.company.points.ScreenPoint;
-import com.company.utils.FigureDrawer;
+import com.company.utils.Figure;
 import com.company.utils.PixelDrawer;
 
 import java.awt.*;
 
-public class BresenhamEllipse implements FigureDrawer {
+public class BresenhamEllipse implements Figure {
     PixelDrawer pixelDrawer;
     private int x, y, a, b;
     private Color color;

@@ -8,48 +8,42 @@ import com.company.utils.ScreenConverter;
 
 import javax.print.DocFlavor;
 import java.awt.*;
-import java.time.Year;
 
 public class ScaleMarker implements Marker {
     private final int width = 21, height = 21;
     private final Color color = Color.BLACK;
 
-    private RealPoint point;
+    private ScreenPoint point;
     private Graphics2D g;
 
-    public ScaleMarker(Graphics g, RealPoint point) {
+    public ScaleMarker(Graphics g, ScreenPoint point) {
         this.g = (Graphics2D) g;
         this.point = point;
     }
 
-    public double getX() {
+    public int getX() {
         return point.getX();
     }
 
-    public double getY() {
+    public int getY() {
         return point.getY();
     }
 
-    public void setX(double x) {
-        this.point.setX(x);
-        //this.point = new ScreenPoint(x, point.getY());
+    public void setX(int x) {
+        this.point = new ScreenPoint(x, point.getY());
     }
 
-    public void setY(double y) {
-        this.point.setY(y);
-        //this.point = new ScreenPoint(point.getX(), y);
+    public void setY(int y) {
+        this.point = new ScreenPoint(point.getX(), y);
     }
 
     @Override
     public void draw() {
-        double x = point.getX();
-        double y = point.getY();
+        int x = point.getX();
+        int y = point.getY();
         g.setColor(color);
         g.setStroke(new BasicStroke(3));
-        ScreenConverter scrConverter = new ScreenConverter(-2, 2, 4, 4, 800, 600);
-        ScreenPoint buff = scrConverter.r2s(new RealPoint(x + width / 2 + 1, y));
-        g.drawLine(buff.getX(), buff.getY(), buff.getX(), buff.getY() + height);
-        buff = scrConverter.r2s(new RealPoint(x, y + height / 2 + 1));
-        g.drawLine(buff.getX(), buff.getY(), buff.getX() + width, buff.getY());
+        g.drawLine(x + width / 2 + 1, y,x + width / 2 + 1,  y + height);
+        g.drawLine(x, y + height / 2 + 1, x + width, y + height / 2 + 1);
     }
 }

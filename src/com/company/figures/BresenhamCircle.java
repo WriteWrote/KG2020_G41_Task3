@@ -1,5 +1,6 @@
 package com.company.figures;
 
+import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
 import com.company.utils.Figure;
 import com.company.utils.PixelDrawer;
@@ -7,7 +8,9 @@ import java.awt.*;
 
 public class BresenhamCircle implements Figure {
     PixelDrawer pixelDrawer;
-    private int x, y, radius;
+    private RealPoint p;
+    //private int x, y, radius;
+    private int radius;
     private Color color;
 
     public BresenhamCircle(PixelDrawer pixelDrawer, int x, int y, int radius, Color color) {
@@ -44,7 +47,7 @@ public class BresenhamCircle implements Figure {
     }
 
     @Override
-    public void moveMarkers(ScreenPoint start, ScreenPoint end) {
+    public void moveMarkers(RealPoint start, RealPoint end) {
 
     }
 

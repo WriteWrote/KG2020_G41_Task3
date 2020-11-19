@@ -33,8 +33,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 //    private List<Arc> arcList = new ArrayList<>();
 //    private Arc currentArc;
 
-    private List<Figure> objects = new ArrayList<>();
-    private ScreenPoint currentCoordinates;
+    private ArrayList<BresenhamCircle> objects = new ArrayList<>();
+    private BresenhamCircle currCircle;
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -73,7 +73,12 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             prevPoint = new ScreenPoint(e.getX(), e.getY());
         else if (e.getButton() == MouseEvent.BUTTON1) {
             currentLine = new Line(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
-            currentCoordinates = new ScreenPoint(e.getX(), e.getY());
+            ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
+            currCircle = new BresenhamCircle(new BufferedImagePixelDrawer(new BufferedImage(
+                    getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR
+            ))
+                    , s.getX(), s.getY(), 200, Color.RED);
+            //repaint();
         }
 
     }
@@ -85,6 +90,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         else if (e.getButton() == MouseEvent.BUTTON1) {
             lines.add(currentLine);
             currentLine = null;
+            currCircle = null;
         }
         repaint();
     }
@@ -118,7 +124,13 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             drawLine(ld, l, Color.BLACK);
         }
         if (currentLine != null)
-            drawLine(ld, currentLine, Color.BLACK);
+            drawLine(ld, currentLine, Color.CYAN);
+        for (BresenhamCircle f : objects) {
+            f.draw();
+        }
+        if (currCircle != null) {
+            currCircle.draw();
+        }
 
         Arc testArc = new Arc(bi_g, pixelDrawer, scrConv.r2s(new RealPoint(0.3, 0.5)), 100);
         BresenhamCircle controlCircle = new BresenhamCircle(pixelDrawer,
@@ -126,12 +138,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 100, Color.YELLOW);
         controlCircle.draw();
         testArc.drawExpCircleArc(0, 100, 100, 100);
-
-        if (isPressed == true) {
-            bi_g.setColor(Color.black);
-            bi_g.fillOval(new ScreenPoint(100, 100).getX(), new ScreenPoint(100, 100).getY(), 500, 500);
-            isPressed = false;
-        }
 
         bi_g.dispose();
         g.drawImage(bi, 0, 0, null);
@@ -188,21 +194,31 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     @Override
     public void keyTyped(KeyEvent e) {
         if (e.getKeyChar() == 'v') {
-            isPressed = true;
-            repaint();
         }
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
-            isPressed = true;
-            repaint();
+            BufferedImage bi = new BufferedImage(
+                    getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR
+            );
+            PixelDrawer pixelDrawer = new BufferedImagePixelDrawer(bi);
+
+            try {
+                //objects.add(new BresenhamCircle(pixelDrawer, s.getX(), s.getY(), 150, Color.RED));
+                //currentLine = new Line(scrConv.s2r(s), scrConv.s2r(new ScreenPoint(s.getX() + 100, s.getY() + 100)));
+                //lines.add(currentLine);
+                //currentLine = null;
+                currCircle = new BresenhamCircle(pixelDrawer, scrConv.r2s(new RealPoint(-1,1)).getX(), scrConv.r2s(new RealPoint(-1, 1)).getY(),
+                        150, Color.RED);
+                objects.add(currCircle);
+                currCircle = null;
+                repaint();
+            } catch (Exception exp) {
+                JOptionPane.showMessageDialog(null, "You must firstly choose the coordinates by clicking left button of your mouse");
+            }
         }
-        /*if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            isPressed = true;
-            repaint();
-        }*/
     }
 
     @Override

@@ -12,12 +12,12 @@ import java.util.List;
 
 public class Arc implements Figure {
     private PixelDrawer pixelDrawer;
-    private RealPoint point;
+    private ScreenPoint point;
     private int radius;
     private Color color = Color.BLACK;
     private ScaleMarker marker_UL, marker_UR, marker_DL, marker_DR;
 
-    public Arc(Graphics g, PixelDrawer pixelDrawer, RealPoint point, int radius) {
+    public Arc(Graphics g, PixelDrawer pixelDrawer, ScreenPoint point, int radius) {
         this.pixelDrawer = pixelDrawer;
         this.point = point;
         this.radius = radius;
@@ -99,6 +99,11 @@ public class Arc implements Figure {
     }
 
     @Override
+    public void moveMarkers(RealPoint start, RealPoint end) {
+
+    }
+
+    @Override
     public boolean hitCursor(ScreenPoint screenPoint) {
         if (screenPoint.getX() < marker_UR.getX() && screenPoint.getX() > marker_UL.getX() &&
                 screenPoint.getY() > marker_DR.getY() && screenPoint.getY() < marker_UR.getY()) {
@@ -112,7 +117,7 @@ public class Arc implements Figure {
 
     }
 
-    @Override
+//    @Override
     public void moveMarkers(ScreenPoint start, ScreenPoint end) {
         int dx = start.getX() - end.getX();
         int dy = start.getY() - end.getY();

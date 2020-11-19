@@ -1,5 +1,6 @@
 package com.company.figures;
 
+import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
 import com.company.utils.Figure;
 import com.company.utils.PixelDrawer;
@@ -67,7 +68,7 @@ public class BresenhamEllipse implements Figure {
     }
 
     @Override
-    public void moveMarkers(ScreenPoint start, ScreenPoint end) {
+    public void moveMarkers(RealPoint start, RealPoint end) {
 
     }
 

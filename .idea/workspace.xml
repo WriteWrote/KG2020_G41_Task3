@@ -22,7 +22,7 @@
   <component name="ProjectId" id="1iMDYKFFLzbpZNUnt6bT5fJseRt" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/Lection_3/Lection 3" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Джава 2 сем/таск1/попитка№5" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -83,14 +83,19 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
-          <line>189</line>
-          <option name="timeStamp" value="1" />
+          <url>file://$PROJECT_DIR$/src/com/company/figures/BresenhamEllipse.java</url>
+          <line>27</line>
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
-          <line>202</line>
-          <option name="timeStamp" value="2" />
+          <line>212</line>
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
+          <line>127</line>
+          <option name="timeStamp" value="21" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -4,6 +4,7 @@ import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
 import com.company.utils.Figure;
 import com.company.utils.PixelDrawer;
+import com.company.utils.ScreenConverter;
 import com.company.utils.markers.ScaleMarker;
 
 import java.awt.*;
@@ -11,14 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Arc implements Figure {
-    private PixelDrawer pixelDrawer;
     private ScreenPoint point;
     private int radius;
     private Color color = Color.BLACK;
     private ScaleMarker marker_UL, marker_UR, marker_DL, marker_DR;
 
-    public Arc(Graphics g, PixelDrawer pixelDrawer, ScreenPoint point, int radius) {
-        this.pixelDrawer = pixelDrawer;
+    public Arc(Graphics g, ScreenPoint point, int radius) {
         this.point = point;
         this.radius = radius;
         marker_UL = new ScaleMarker(g, point);
@@ -27,14 +26,13 @@ public class Arc implements Figure {
         marker_DR = new ScaleMarker(g, new ScreenPoint(point.getX() + 2 * radius, point.getY() + 2 * radius));
     }
 
-    public Arc(PixelDrawer pixelDrawer, ScreenPoint point, int radius, Color color) {
-        this.pixelDrawer = pixelDrawer;
+    public Arc( ScreenPoint point, int radius, Color color) {
         this.point = point;
         this.radius = radius;
         this.color = color;
     }
 
-    public void drawExpCircleArc(int startX, int startY, int endX, int endY) {
+    public void drawExpCircleArc(PixelDrawer pixelDrawer,int startX, int startY, int endX, int endY) {
         int x = point.getX();
         int y = point.getY();
         int _x = radius;
@@ -94,7 +92,7 @@ public class Arc implements Figure {
     }
 
     @Override
-    public void draw() {
+    public void draw(ScreenConverter screenConverter, PixelDrawer pixelDrawer) {
 
     }
 

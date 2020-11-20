@@ -4,25 +4,20 @@ import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
 import com.company.utils.Figure;
 import com.company.utils.PixelDrawer;
+import com.company.utils.ScreenConverter;
 
 import java.awt.*;
 
 public class BresenhamEllipse implements Figure {
-    PixelDrawer pixelDrawer;
-    private int x, y, a, b;
+    private RealPoint point;
+    private int a, b;
     private Color color;
 
-    public BresenhamEllipse(PixelDrawer pixelDrawer, int x, int y, int a, int b, Color color) {
-        this.pixelDrawer = pixelDrawer;
-        this.x = x;
-        this.y = y;
-        this.a = a;
-        this.b = b;
-        this.color = color;
-    }
-
     @Override
-    public void draw() {
+    public void draw(ScreenConverter screenConverter, PixelDrawer pixelDrawer) {
+        ScreenPoint screenPoint = screenConverter.r2s(point);
+        int x = screenPoint.getX();
+        int y = screenPoint.getY();
         int _x = 0;
         int _y = b;
         int a_sqr = a * a; // a^2, a - большая полуось
@@ -81,9 +76,10 @@ public class BresenhamEllipse implements Figure {
     public void fill() {
 
     }
-    public void setParams(int x, int y, int a, int b, Color color){
-        this.x = x;
-        this.y = y;
+
+    public void setParams(int x, int y, int a, int b, Color color) {
+        this.point.setX(x);
+        this.point.setY(y);
         this.a = a;
         this.b = b;
         this.color = color;

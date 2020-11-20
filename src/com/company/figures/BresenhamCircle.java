@@ -4,25 +4,27 @@ import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
 import com.company.utils.Figure;
 import com.company.utils.PixelDrawer;
+import com.company.utils.ScreenConverter;
+
 import java.awt.*;
 
 public class BresenhamCircle implements Figure {
-    PixelDrawer pixelDrawer;
-    private RealPoint p;
+    private RealPoint point;
     //private int x, y, radius;
     private int radius;
     private Color color;
 
-    public BresenhamCircle(PixelDrawer pixelDrawer, int x, int y, int radius, Color color) {
-        this.pixelDrawer = pixelDrawer;
-        this.x = x;
-        this.y = y;
+    public BresenhamCircle(RealPoint point, int radius, Color color) {
+        this.point = point;
         this.radius = radius;
         this.color = color;
     }
 
     @Override
-    public void draw() {
+    public void draw(ScreenConverter screenConverter, PixelDrawer pixelDrawer) {
+        ScreenPoint screenPoint = screenConverter.r2s(point);
+        int x = screenPoint.getX(); int y = screenPoint.getY();
+
         int _x = radius;
         //int _x = x;
         int _y = 0;
@@ -60,9 +62,10 @@ public class BresenhamCircle implements Figure {
     public void fill() {
 
     }
-    public void setParams(int x, int y, int radius, Color color){
-        this.x = x;
-        this.y = y;
+
+    public void setParams(int x, int y, int radius, Color color) {
+        this.point.setX(x);
+        this.point.setY(y);
         this.radius = radius;
         this.color = color;
     }

@@ -84,18 +84,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/company/figures/BresenhamEllipse.java</url>
-          <line>27</line>
+          <line>22</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
-          <line>212</line>
+          <line>223</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
-          <line>127</line>
-          <option name="timeStamp" value="21" />
+          <url>file://$PROJECT_DIR$/src/com/company/figures/BresenhamCircle.java</url>
+          <line>24</line>
+          <option name="timeStamp" value="22" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

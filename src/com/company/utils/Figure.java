@@ -4,7 +4,7 @@ import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
 
 public interface Figure {
-    void draw();
+    void draw(ScreenConverter screenConverter, PixelDrawer pixelDrawer);
 
     void moveMarkers(RealPoint start, RealPoint end);
 

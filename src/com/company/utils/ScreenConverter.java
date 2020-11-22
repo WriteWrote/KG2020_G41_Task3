@@ -75,4 +75,12 @@ public class ScreenConverter {
         int py = (int) ((cornerY - p.getY()) * screenH / realH);
         return new ScreenPoint(px, py);
     }
+
+    public double value2r(int value) {
+        return value * realW / screenW ;
+    }
+
+    public int value2s(double value) {
+        return (int) (value * screenW / realW);
+    }
 }

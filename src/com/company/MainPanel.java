@@ -1,43 +1,48 @@
 package com.company;
 
-import com.company.figures.Arc;
+
 import com.company.figures.BresenhamCircle;
+
+import com.company.figures.FigureType;
 import com.company.figures.Line;
+import com.company.linedrawers.BresenhamLineDrawer;
 import com.company.linedrawers.DDALineDrawer;
 import com.company.pixeldrawers.BufferedImagePixelDrawer;
 import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
 import com.company.utils.Figure;
+import com.company.utils.PixelDrawer;
 import com.company.utils.ScreenConverter;
 import com.company.utils.LineDrawer;
-import com.company.utils.PixelDrawer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
     private ArrayList<Line> lines = new ArrayList<>();
-    private ScreenConverter scrConv = new ScreenConverter(-2, 2, 4, 4, 800, 600);
-    /*private Line yAxis = new Line(0, (int) -screenConverter.getRealH() / 2, 0, (int) screenConverter.getRealH() / 2);
-    private Line xAxis = new Line(-(int) screenConverter.getRealW() / 2, 0, (int) screenConverter.getRealW() / 2, 0);*/
+    private ScreenConverter scrConv = new ScreenConverter(-4, 4, 8, 8, 400, 400);
 
     private Line yAxis = new Line(0, -2, 0, 2);
     private Line xAxis = new Line(-2, 0, 2, 0);
+
+    private String activeItem = "Circle";
+
     private ScreenPoint prevPoint;
     private Line currentLine;
-    private BufferedImage bi = new BufferedImage(
-            800, 600, BufferedImage.TYPE_3BYTE_BGR
-    );
-    private PixelDrawer pixelDrawer;
-//    private List<Arc> arcList = new ArrayList<>();
-//    private Arc currentArc;
 
-    private ArrayList<BresenhamCircle> objects = new ArrayList<>();
-    private BresenhamCircle currCircle;
+    private ArrayList<Figure> objects = new ArrayList<>();
+    private Figure currentFigure;
+
+    public void setActiveItem(String activeItem) {
+        this.activeItem = activeItem;
+    }
+
+    public String getActiveItem() {
+        return activeItem;
+    }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -64,8 +69,18 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             scrConv.setCornerY(scrConv.getCornerY() - vector.getY());
             prevPoint = current;
         }
-        if (currentLine != null) {
-            currentLine.setP2(scrConv.s2r(current));
+
+        if (activeItem.equals("Line")) {
+            if (currentLine != null) {
+                currentLine.setP2(scrConv.s2r(current));
+            }
+        }
+
+        if (activeItem.equals("Circle")) {
+            if (currentFigure != null) {
+                currentFigure.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                currentFigure.moveMarkers(currentFigure.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+            }
         }
         repaint();
     }
@@ -75,12 +90,26 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         if (e.getButton() == MouseEvent.BUTTON3)
             prevPoint = new ScreenPoint(e.getX(), e.getY());
         else if (e.getButton() == MouseEvent.BUTTON1) {
-            currentLine = new Line(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
             ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
-            currCircle = new BresenhamCircle(scrConv.s2r(s), 200, Color.RED);
-            //repaint();
-        }
 
+            if (activeItem.equals(FigureType.Circle.toString())) {
+                for (Figure f :
+                        objects) {
+                    if (f.hitCursor(scrConv.s2r(s))) {
+                        currentFigure = f;
+                    }
+                }
+                currentFigure = new BresenhamCircle(scrConv.s2r(s), 1, new Color(0x73C8EC));
+            }
+
+            else if (activeItem.equals(FigureType.Line.toString())) {
+                if (e.getButton() == MouseEvent.BUTTON3)
+                    prevPoint = new ScreenPoint(e.getX(), e.getY());
+                else if (e.getButton() == MouseEvent.BUTTON1) {
+                    currentLine = new Line(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                }
+            }
+        }
     }
 
     @Override
@@ -88,9 +117,10 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         if (e.getButton() == MouseEvent.BUTTON3)
             prevPoint = null;
         else if (e.getButton() == MouseEvent.BUTTON1) {
-            lines.add(currentLine);
-            currentLine = null;
-            currCircle = null;
+            if (currentLine != null) {
+                lines.add(currentLine);
+                currentLine = null;
+            }
         }
         repaint();
     }
@@ -101,58 +131,52 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         this.addMouseWheelListener(this);
         this.setFocusable(true);
         this.addKeyListener(this);
+
     }
 
     @Override
     public void paint(Graphics g) {
-        bi = new BufferedImage(
+        BufferedImage bi = new BufferedImage(
                 getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR
         );
+
         scrConv.setScreenW(getWidth());
         scrConv.setScreenH(getHeight());
+
         Graphics bi_g = bi.getGraphics();
         bi_g.setColor(Color.WHITE);
         bi_g.fillRect(0, 0, getWidth(), getHeight());
         bi_g.setColor(Color.black);
-        pixelDrawer = new BufferedImagePixelDrawer(bi);
-        LineDrawer ld = new DDALineDrawer(pixelDrawer);
 
-        /*drawLine(ld, xAxis, Color.LIGHT_GRAY);
-        drawLine(ld, yAxis, Color.LIGHT_GRAY);*/
+        PixelDrawer pixelDrawer = new BufferedImagePixelDrawer(bi);
+
+        LineDrawer ld = new BresenhamLineDrawer(pixelDrawer);
+
         drawCoordinates(ld, xAxis, yAxis, (int) scrConv.getRealW(), (int) scrConv.getRealH(), bi_g);
+
         for (Line l : lines) {
             drawLine(ld, l, Color.BLACK);
         }
         if (currentLine != null)
-            drawLine(ld, currentLine, Color.CYAN);
-        if (currCircle != null) {
-            currCircle.draw(scrConv, pixelDrawer);
-        }
-        for (BresenhamCircle c :
+            drawLine(ld, currentLine, new Color(0x73C8EC));
+
+        for (Figure c :
                 objects) {
             c.draw(scrConv, pixelDrawer);
+            c.drawMarkers(ld, scrConv);
+        }
+        if (currentFigure != null) {
+            currentFigure.draw(scrConv, pixelDrawer);
+            currentFigure.drawMarkers(ld, scrConv);
         }
 
-        /*if (isPressed) {
-            BresenhamCircle circle = objects.get(0);
-            circle.draw(scrConv, pixelDrawer);
-            //BresenhamCircle circle = new BresenhamCircle(pixelDrawer, new RealPoint(-1, -1), 150, Color.RED);
-            //circle.draw(scrConv);
-        }*/
-        Arc testArc = new Arc(bi_g, scrConv.r2s(new RealPoint(0.3, 0.5)), 100);
+        /*Arc testArc = new Arc(bi_g, scrConv.r2s(new RealPoint(0.3, 0.5)), 100);
         BresenhamCircle controlCircle = new BresenhamCircle(new RealPoint(0.3, 0.5), 100, Color.YELLOW);
         controlCircle.draw(scrConv, pixelDrawer);
-        testArc.drawExpCircleArc(pixelDrawer, 0, 100, 100, 100);
+        testArc.drawExpCircleArc(pixelDrawer, 0, 100, 100, 100);*/
 
         bi_g.dispose();
         g.drawImage(bi, 0, 0, null);
-    }
-
-    private void drawAll(BufferedImagePixelDrawer pd, ScreenConverter screenConverter) {
-        for (BresenhamCircle c :
-                objects) {
-            c.draw(screenConverter, pd);
-        }
     }
 
     private void drawLine(LineDrawer ld, Line l, Color color) {
@@ -203,8 +227,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
     }
 
-    boolean isPressed = false;
-
     @Override
     public void keyTyped(KeyEvent e) {
         if (e.getKeyChar() == 'v') {
@@ -215,18 +237,29 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
             try {
-                isPressed = true;
-                //objects.add(new BresenhamCircle(pixelDrawer, s.getX(), s.getY(), 150, Color.RED));
-                /*currentLine = new Line(scrConv.s2r(new ScreenPoint(150, 150)), scrConv.s2r(new ScreenPoint(150, 150).getX() + 100, new ScreenPoint(150, 150).getY() + 100)));
-                lines.add(currentLine);
-                currentLine = null;*/
-
-                currCircle = new BresenhamCircle(new RealPoint(-1, 1), 150, Color.CYAN);
-                objects.add(currCircle);
-                currCircle = null;
+//                objects.add(new BresenhamEllipse(new RealPoint(-2, 1), 150, 150, Color.BLUE));
+                if (currentFigure != null)
+                    objects.add(currentFigure);
+                currentFigure.setColor(Color.BLACK);
+                currentFigure = null;
                 repaint();
             } catch (Exception exp) {
                 JOptionPane.showMessageDialog(null, "You must firstly choose the coordinates by clicking left button of your mouse");
+            }
+        }
+        if (e.getKeyCode() == KeyEvent.VK_C) {
+            activeItem = "Circle";
+            currentLine = null;
+            repaint();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_L) {
+            activeItem = "Line";
+            currentFigure = null;
+            repaint();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+            if (currentFigure != null) {
+                objects.remove(currentFigure);
             }
         }
     }

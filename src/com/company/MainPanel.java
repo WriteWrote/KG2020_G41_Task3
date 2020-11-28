@@ -48,7 +48,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     public void mouseWheelMoved(MouseWheelEvent e) {
         int clicks = e.getWheelRotation();
         double scale = 1;
-        double coef = clicks > 0 ? 0.9 : 1.1;
+        double coef = clicks < 0 ? 0.9 : 1.1;
         for (int i = 0; i < Math.abs(clicks); i++) {
             scale *= coef;
         }
@@ -78,8 +78,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
         if (activeItem.equals("Circle")) {
             if (currentFigure != null) {
-                currentFigure.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                 currentFigure.moveMarkers(currentFigure.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                currentFigure.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
             }
         }
         repaint();
@@ -89,20 +89,25 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON3)
             prevPoint = new ScreenPoint(e.getX(), e.getY());
+
         else if (e.getButton() == MouseEvent.BUTTON1) {
-            ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
+            ScreenPoint currentPoint = new ScreenPoint(e.getX(), e.getY());
 
             if (activeItem.equals(FigureType.Circle.toString())) {
-                for (Figure f :
-                        objects) {
-                    if (f.hitCursor(scrConv.s2r(s))) {
+                for (Figure f : objects) {
+                    if (f.hitCursor(scrConv.s2r(currentPoint))) {
                         currentFigure = f;
+                        currentFigure.activate(true);
+                    } else {
+                        f.activate(false);
                     }
+                    //f.activate(false);
                 }
-                currentFigure = new BresenhamCircle(scrConv.s2r(s), 1, new Color(0x73C8EC));
-            }
+                if (!objects.contains(currentFigure) || currentFigure == null) {
+                    currentFigure = new BresenhamCircle(scrConv.s2r(currentPoint), 1, new Color(0x73C8EC));
+                }
 
-            else if (activeItem.equals(FigureType.Line.toString())) {
+            } else if (activeItem.equals(FigureType.Line.toString())) {
                 if (e.getButton() == MouseEvent.BUTTON3)
                     prevPoint = new ScreenPoint(e.getX(), e.getY());
                 else if (e.getButton() == MouseEvent.BUTTON1) {
@@ -163,7 +168,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         for (Figure c :
                 objects) {
             c.draw(scrConv, pixelDrawer);
-            c.drawMarkers(ld, scrConv);
+            //c.drawMarkers(ld, scrConv);
         }
         if (currentFigure != null) {
             currentFigure.draw(scrConv, pixelDrawer);
@@ -237,7 +242,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
             try {
-//                objects.add(new BresenhamEllipse(new RealPoint(-2, 1), 150, 150, Color.BLUE));
                 if (currentFigure != null)
                     objects.add(currentFigure);
                 currentFigure.setColor(Color.BLACK);
@@ -255,12 +259,31 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         if (e.getKeyCode() == KeyEvent.VK_L) {
             activeItem = "Line";
             currentFigure = null;
+            for (Figure f :
+                    objects) {
+                f.activate(false);
+            }
             repaint();
         }
         if (e.getKeyCode() == KeyEvent.VK_D) {
             if (currentFigure != null) {
                 objects.remove(currentFigure);
             }
+        }
+        if (e.getKeyCode() == KeyEvent.VK_Z) {
+            for (Figure f :
+                    objects) {
+                f.activate(false);
+            }
+            currentFigure = null;
+            currentLine = null;
+            repaint();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+            if (currentFigure != null)
+                objects.remove(currentFigure);
+            currentFigure = null;
+            repaint();
         }
     }
 

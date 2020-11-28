@@ -18,6 +18,7 @@ public class BresenhamCircle implements Figure {
     private double radius;
     private Color color;
     private ScaleMarker marker_UL, marker_UR, marker_DL, marker_DR;
+    private boolean isActivated = false;
 
     public BresenhamCircle(RealPoint point, int radius, Color color) {
         this.point = point;
@@ -27,6 +28,9 @@ public class BresenhamCircle implements Figure {
         marker_DL = new ScaleMarker(new RealPoint(point.getX(), point.getY() - radius * 2));
         marker_UR = new ScaleMarker(new RealPoint(point.getX() + 2 * radius, point.getY()));
         marker_DR = new ScaleMarker(new RealPoint(point.getX() + 2 * radius, point.getY() - 2 * radius));
+    }
+    public void activate(boolean b){
+        this.isActivated = b;
     }
 
     @Override
@@ -56,12 +60,15 @@ public class BresenhamCircle implements Figure {
                 radiusError += 2 * (_y - _x + 1);
             }
         }
+        if (isActivated){
+            drawMarkers(new BresenhamLineDrawer(pixelDrawer), screenConverter);
+        }
     }
 
     @Override
     public void moveMarkers(RealPoint start, RealPoint end) {
-        double dx = start.getX() - end.getX();
-        double dy = start.getY() - end.getY();
+        double dx = end.getX() - start.getX();
+        double dy = end.getY() - start.getY();
         List<ScaleMarker> list = new ArrayList<>();
         list.add(marker_DL);
         list.add(marker_DR);

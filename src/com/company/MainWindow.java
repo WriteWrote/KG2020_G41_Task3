@@ -19,7 +19,8 @@ public class MainWindow extends JFrame {
                 FigureType.values()) {
             comboBox.addItem(f.toString());
         }
-        spinner = new JSpinner(new SpinnerListModel(FigureType.values()));
+        spinner.setModel(new SpinnerListModel(FigureType.values()));
+        //spinner = new JSpinner(new SpinnerListModel(FigureType.values()));
     }
 
     public MainWindow() {
@@ -32,6 +33,8 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainPanel.setActiveItem(comboBox.getSelectedItem().toString());
+                //MainWindow.this.requestFocus();
+                mainPanel.requestFocus();
             }
         });
     }
@@ -57,7 +60,7 @@ public class MainWindow extends JFrame {
         spinner.setEnabled(false);
         rootPanel.add(spinner, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBox = new JComboBox();
-        comboBox.setEnabled(false);
+        comboBox.setEnabled(true);
         rootPanel.add(comboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 

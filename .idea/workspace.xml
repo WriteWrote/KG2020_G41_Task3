@@ -106,13 +106,8 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
-          <line>117</line>
+          <line>108</line>
           <option name="timeStamp" value="53" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
-          <line>111</line>
-          <option name="timeStamp" value="55" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/company/utils/markers/ScaleMarker.java</url>
@@ -120,8 +115,8 @@
           <option name="timeStamp" value="58" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/company/arcdrawers/BresenhamArcDrawer.java</url>
-          <line>95</line>
+          <url>file://$PROJECT_DIR$/src/com/company/arcdrawers/SegmentDrawer.java</url>
+          <line>49</line>
           <option name="timeStamp" value="74" />
         </line-breakpoint>
       </breakpoints>

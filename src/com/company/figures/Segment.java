@@ -8,7 +8,7 @@ import com.company.utils.markers.ScaleMarker;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Arc {
+public class Segment {
     private RealPoint point;
     private double startAngle;
     private double deltaAngle;
@@ -16,23 +16,20 @@ public class Arc {
     private ScaleMarker marker_UL, marker_UR, marker_DL, marker_DR;
     private boolean isActivated = false;
 
-    private ScaleMarker[] markers;
-
-    public Arc(RealPoint point, double startAngle, double deltaAngle, double radius) {
+    public Segment(RealPoint point, double startAngle, double deltaAngle, double radius) {
         this.point = point;
         this.startAngle = startAngle;
         this.deltaAngle = deltaAngle;
         this.radius = radius;
-/*      work this out!
 
-        marker_UL = new ScaleMarker(point);
-        marker_DL = new ScaleMarker(new RealPoint(point.getX(), point.getY() - radius * 2));
-        marker_UR = new ScaleMarker(new RealPoint(point.getX() + 2 * radius, point.getY()));
-        marker_DR = new ScaleMarker(new RealPoint(point.getX() + 2 * radius, point.getY() - 2 * radius));
-        markers = new ScaleMarker[]{marker_UL, marker_UR, marker_DL, marker_DR};
-*/
+        marker_UL = new ScaleMarker(new RealPoint(point.getX() - radius, point.getY() - radius));
+        marker_DL = new ScaleMarker(new RealPoint(point.getX() - radius, point.getY() + radius));
+        marker_UR = new ScaleMarker(new RealPoint(point.getX() + radius, point.getY() - radius));
+        marker_DR = new ScaleMarker(new RealPoint(point.getX() + radius, point.getY() + radius));
     }
+
     public boolean hitMarkers(RealPoint currPoint, ScreenConverter screenConverter) {
+        ScaleMarker[] markers = new ScaleMarker[]{marker_UL, marker_UR, marker_DL, marker_DR};
         for (ScaleMarker m :
                 markers) {
             if (m.hitMarker(currPoint, screenConverter))
@@ -40,19 +37,22 @@ public class Arc {
         }
         return false;
     }
+
     public void drawMarkers(LineDrawer g, ScreenConverter screenConverter) {
         marker_DR.draw(g, screenConverter);
         marker_UL.draw(g, screenConverter);
         marker_UR.draw(g, screenConverter);
         marker_DL.draw(g, screenConverter);
     }
+
     public boolean hitCursor(RealPoint currP) {
-        /*if (currP.getX() < marker_UR.getX() && currP.getX() > marker_UL.getX() &&
-                currP.getY() > marker_DR.getY() && currP.getY() < marker_UR.getY()) {
+        if (currP.getX() < marker_UR.getX() && currP.getX() > marker_DL.getX()
+                && currP.getY() > marker_UR.getY() && currP.getY() < marker_DL.getY()) {
             return true;
-        }*/
+        }
         return false;
     }
+
     public void moveMarkers(RealPoint start, RealPoint end) {
         double dx = end.getX() - start.getX();
         double dy = end.getY() - start.getY();

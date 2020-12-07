@@ -18,8 +18,6 @@ public class Circle {
     private ScaleMarker marker_UL, marker_UR, marker_DL, marker_DR;
     private boolean isActivated = false;
 
-    private ScaleMarker[] markers;
-
     public Circle(RealPoint point, int radius) {
         this.point = point;
         this.radius = radius;
@@ -28,7 +26,6 @@ public class Circle {
         marker_DL = new ScaleMarker(new RealPoint(point.getX(), point.getY() - radius * 2));
         marker_UR = new ScaleMarker(new RealPoint(point.getX() + 2 * radius, point.getY()));
         marker_DR = new ScaleMarker(new RealPoint(point.getX() + 2 * radius, point.getY() - 2 * radius));
-        markers = new ScaleMarker[]{marker_UL, marker_UR, marker_DL, marker_DR};
     }
 
     public void activate(boolean b) {
@@ -62,6 +59,7 @@ public class Circle {
     }
 
     public boolean hitMarkers(RealPoint currPoint, ScreenConverter screenConverter) {
+        ScaleMarker[] markers = new ScaleMarker[]{marker_UL, marker_UR, marker_DL, marker_DR};
         for (ScaleMarker m :
                 markers) {
             if (m.hitMarker(currPoint, screenConverter))

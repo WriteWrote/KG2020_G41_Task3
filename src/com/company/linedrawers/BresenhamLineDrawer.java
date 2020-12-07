@@ -1,7 +1,7 @@
 package com.company.linedrawers;
 
-import com.company.utils.LineDrawer;
-import com.company.utils.PixelDrawer;
+import com.company.utils.drawers.LineDrawer;
+import com.company.utils.drawers.PixelDrawer;
 import com.company.points.ScreenPoint;
 
 import java.awt.*;
@@ -71,73 +71,4 @@ public class BresenhamLineDrawer implements LineDrawer {
             }
         }
     }
-
-/*    public void drawBresenhamCircle(int x, int y, int radius, Color color) {
-        int _x = radius;
-        //int _x = x;
-        int _y = 0;
-        int radiusError = 1 - _x;
-        while (_x >= _y) {
-            pixelDrawer.setPixel(_x + x + radius, _y + y + radius, color);
-            pixelDrawer.setPixel(_y + x + radius, _x + y + radius, color);
-            pixelDrawer.setPixel(-_x + x + radius, _y + y + radius, color);
-            pixelDrawer.setPixel(-_y + x + radius, _x + y + radius, color);
-            pixelDrawer.setPixel(-_x + x + radius, -_y + y + radius, color);
-            pixelDrawer.setPixel(-_y + x + radius, -_x + y + radius, color);
-            pixelDrawer.setPixel(_x + x + radius, -_y + y + radius, color);
-            pixelDrawer.setPixel(_y + x + radius, -_x + y + radius, color);
-            _y++;
-            if (radiusError < 0) {
-                radiusError += 2 * _y + 1;
-            } else {
-                _x--;
-                radiusError += 2 * (_y - _x + 1);
-            }
-        }
-    }
-*/
-    /*public void drawEllipse(int x, int y, int a, int b, Color color) {
-        int _x = 0;
-        int _y = b;
-        int a_sqr = a * a; // a^2, a - большая полуось
-        int b_sqr = b * b; // b^2, b - малая полуось
-        int delta = 4 * b_sqr * ((_x + 1) * (_x + 1)) +
-                a_sqr * ((2 * _y - 1) * (2 * _y - 1)) - 4 * a_sqr * b_sqr; // Функция координат точки (x+1, y-1/2)
-        while (a_sqr * (2 * _y - 1) > 2 * b_sqr * (_x + 1)) // Первая часть дуги
-        {
-            pixelDrawer.setPixel(x + _x, y + _y, color);
-            pixelDrawer.setPixel(x + _x, y - _y, color);
-            pixelDrawer.setPixel(x - _x, y - _y, color);
-            pixelDrawer.setPixel(x - _x, y + _y, color);
-            if (delta < 0) // Переход по горизонтали
-            {
-                ++_x;
-                delta += 4 * b_sqr * (2 * _x + 3);
-            } else // Переход по диагонали
-            {
-                ++_x;
-                delta = delta - 8 * a_sqr * (_y - 1) + 4 * b_sqr * (2 * _x + 3);
-                --_y;
-            }
-        }
-        delta = b_sqr * ((2 * _x + 1) * (2 * _x + 1)) +
-                4 * a_sqr * ((_y + 1) * (_y + 1)) - 4 * a_sqr * b_sqr; // Функция координат точки (x+1/2, y-1)
-        while (_y + 1 != 0) // Вторая часть дуги, если не выполняется условие первого цикла, значит выполняется a^2(2y - 1) <= 2b^2(x + 1)
-        {
-            pixelDrawer.setPixel(x + _x, y + _y, color);
-            pixelDrawer.setPixel(x + _x, y - _y, color);
-            pixelDrawer.setPixel(x - _x, y - _y, color);
-            pixelDrawer.setPixel(x - _x, y + _y, color);
-            if (delta < 0) // Переход по вертикали
-            {
-                --_y;
-                delta += 4 * a_sqr * (2 * _y + 3);
-            } else // Переход по диагонали
-            {
-                --_y;
-                delta = delta - 8 * b_sqr * (_x + 1) + 4 * a_sqr * (2 * _y + 3);
-                ++_x;
-            }
-        }
-    }*/
 }

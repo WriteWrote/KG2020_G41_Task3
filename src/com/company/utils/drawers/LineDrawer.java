@@ -1,4 +1,4 @@
-package com.company.utils;
+package com.company.utils.drawers;
 
 import com.company.points.ScreenPoint;
 

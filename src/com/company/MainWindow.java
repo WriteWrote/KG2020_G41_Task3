@@ -7,11 +7,11 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 
 public class MainWindow extends JFrame {
     private JPanel rootPanel;
     private MainPanel mainPanel;
-    private JSpinner spinner;
     private JComboBox<String> comboBox;
 
     private void initialiseItems() {
@@ -19,8 +19,6 @@ public class MainWindow extends JFrame {
                 FigureType.values()) {
             comboBox.addItem(f.toString());
         }
-        spinner.setModel(new SpinnerListModel(FigureType.values()));
-        //spinner = new JSpinner(new SpinnerListModel(FigureType.values()));
     }
 
     public MainWindow() {
@@ -32,7 +30,7 @@ public class MainWindow extends JFrame {
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainPanel.setActiveItem(comboBox.getSelectedItem().toString());
+                mainPanel.setActiveItem(Objects.requireNonNull(comboBox.getSelectedItem()).toString());
                 //MainWindow.this.requestFocus();
                 mainPanel.requestFocus();
             }
@@ -56,9 +54,6 @@ public class MainWindow extends JFrame {
         rootPanel = new JPanel();
         rootPanel.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
         rootPanel.add(mainPanel, new GridConstraints(0, 0, 3, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(500, 500), null, new Dimension(500, 500), 0, false));
-        spinner = new JSpinner();
-        spinner.setEnabled(false);
-        rootPanel.add(spinner, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBox = new JComboBox();
         comboBox.setEnabled(true);
         rootPanel.add(comboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

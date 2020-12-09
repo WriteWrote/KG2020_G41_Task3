@@ -105,11 +105,6 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/company/utils/markers/ScaleMarker.java</url>
-          <line>58</line>
-          <option name="timeStamp" value="58" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/com/company/figures/Ellipse.java</url>
           <line>17</line>
           <option name="timeStamp" value="61" />
@@ -118,11 +113,6 @@
           <url>file://$PROJECT_DIR$/src/com/company/figures/SimpleRectangle.java</url>
           <line>30</line>
           <option name="timeStamp" value="64" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/company/utils/markers/ScaleMarker.java</url>
-          <line>54</line>
-          <option name="timeStamp" value="65" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

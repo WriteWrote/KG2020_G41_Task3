@@ -99,18 +99,26 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (activeItem.equals(FigureType.Rectangle.toString())) {
             if (currentRectangle != null) {
+                ScreenPoint stretchPoint = new ScreenPoint(e.getX(), e.getY());
+                int d_x = stretchPoint.getX() - prevDrawPoint.getX();
+                int d_y = stretchPoint.getY() - prevDrawPoint.getY();
+                //prevPoint = scrConv.r2s(currentRectangle.getPoint());
                 if (currentRectangle.hitMarkers(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())))) {
-                    /*
-                    ScreenPoint currentPoint = new ScreenPoint(e.getX(), e.getY());
-                    ScreenPoint delta = new ScreenPoint(currentPoint.getX() - prevDrawPoint.getX(),
-                            currentPoint.getY() - prevDrawPoint.getY());
-                    RealPoint deltaReal = scrConv.s2r(delta);
-*/
-                    currentRectangle.setHeight(currentRectangle.getHeight() + scrConv.value2r(1));
-                    currentRectangle.setWidth(currentRectangle.getWidth() + scrConv.value2r(1));
+
+                    currentRectangle.setHeight(currentRectangle.getHeight() + scrConv.value2r(d_y));
+                    currentRectangle.setWidth(currentRectangle.getWidth() + scrConv.value2r(d_x));
+                    //currentRectangle.setHeight(currentRectangle.getHeight() + scrConv.value2r(1));
+                    //currentRectangle.setWidth(currentRectangle.getWidth() + scrConv.value2r(1));
+                    stretching = false;
                 }
-                currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
-                currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                if (!stretching) {
+                    // check this one later
+                    currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                    ScreenPoint buff = scrConv.r2s(currentRectangle.getPoint());
+                    currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY()+d_y)));
+                    //currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                    //currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                }
             }
         }
         if (activeItem.equals(FigureType.Ellipse.toString())) {
@@ -168,7 +176,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 if (!ellipses.contains(currentEllipse) || currentEllipse == null) {
                     currentEllipse = new Ellipse(scrConv.s2r(currentPoint), scrConv.value2r(100), scrConv.value2r(60));
                 }
-            } else if (activeItem.equals(FigureType.Rectangle.toString())) {
+            }
+            if (activeItem.equals(FigureType.Rectangle.toString())) {
                 for (SimpleRectangle r : simpleRectangles) {
                     if (r.hitCursor(scrConv.s2r(currentPoint))) {
                         currentRectangle = r;

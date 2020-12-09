@@ -8,24 +8,20 @@ import com.company.utils.markers.ScaleMarker;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Segment {
+public class SimpleRectangle {
     private RealPoint point;
-    private double startAngle;
-    private double deltaAngle;
-    private double radius;
+    private double width, height;
     private ScaleMarker marker_UL, marker_UR, marker_DL, marker_DR;
     private boolean isActivated = false;
 
-    public Segment(RealPoint point, double startAngle, double deltaAngle, double radius) {
+    public SimpleRectangle(RealPoint point, double width, double height) {
         this.point = point;
-        this.startAngle = startAngle;
-        this.deltaAngle = deltaAngle;
-        this.radius = radius;
-
-        marker_UL = new ScaleMarker(new RealPoint(point.getX() - radius, point.getY() - radius));
-        marker_DL = new ScaleMarker(new RealPoint(point.getX() - radius, point.getY() + radius));
-        marker_UR = new ScaleMarker(new RealPoint(point.getX() + radius, point.getY() - radius));
-        marker_DR = new ScaleMarker(new RealPoint(point.getX() + radius, point.getY() + radius));
+        this.width = width;
+        this.height = height;
+        marker_UL = new ScaleMarker(point);
+        marker_DL = new ScaleMarker(new RealPoint(point.getX(), point.getY() - height));
+        marker_UR = new ScaleMarker(new RealPoint(point.getX() + width, point.getY()));
+        marker_DR = new ScaleMarker(new RealPoint(point.getX() + width, point.getY() - height));
     }
 
     public boolean hitMarkers(RealPoint currPoint, ScreenConverter screenConverter) {
@@ -46,8 +42,8 @@ public class Segment {
     }
 
     public boolean hitCursor(RealPoint currP) {
-        if (currP.getX() < marker_UR.getX() && currP.getX() > marker_DL.getX()
-                && currP.getY() > marker_UR.getY() && currP.getY() < marker_DL.getY()) {
+        if (currP.getX() < marker_UR.getX() && currP.getX() > marker_UL.getX() &&
+                currP.getY() > marker_DR.getY() && currP.getY() < marker_UR.getY()) {
             return true;
         }
         return false;
@@ -72,16 +68,12 @@ public class Segment {
         return point;
     }
 
-    public double getRadius() {
-        return radius;
+    public double getWidth() {
+        return width;
     }
 
-    public double getStartAngle() {
-        return startAngle;
-    }
-
-    public double getDeltaAngle() {
-        return deltaAngle;
+    public double getHeight() {
+        return height;
     }
 
     public boolean isActivated() {
@@ -92,19 +84,22 @@ public class Segment {
         this.point = point;
     }
 
-    public void setStartAngle(double startAngle) {
-        this.startAngle = startAngle;
+    public void setWidth(double width) {
+        this.width = width;
     }
 
-    public void setDeltaAngle(double deltaAngle) {
-        this.deltaAngle = deltaAngle;
-    }
-
-    public void setRadius(double radius) {
-        this.radius = radius;
+    public void setHeight(double height) {
+        this.height = height;
     }
 
     public void activate(boolean activated) {
         isActivated = activated;
+    }
+
+    public void setParams(double x, double y, double width, double height) {
+        this.point.setX(x);
+        this.point.setY(y);
+        this.width = width;
+        this.height = height;
     }
 }

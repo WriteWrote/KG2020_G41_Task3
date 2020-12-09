@@ -2,19 +2,18 @@ package com.company;
 
 
 import com.company.arcdrawers.SegmentDrawer;
-import com.company.circledrawers.BresenhamCircleDrawer;
-import com.company.figures.Segment;
-import com.company.figures.Circle;
+import com.company.utils.simplefiguresdrawers.BresenhamCircleDrawer;
+import com.company.figures.*;
 
-import com.company.figures.FigureType;
-import com.company.figures.Line;
 import com.company.linedrawers.BresenhamLineDrawer;
 import com.company.pixeldrawers.BufferedImagePixelDrawer;
 import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
-import com.company.utils.drawers.PixelDrawer;
+import com.company.utils.Idrawers.PixelDrawer;
 import com.company.utils.ScreenConverter;
-import com.company.utils.drawers.LineDrawer;
+import com.company.utils.Idrawers.LineDrawer;
+import com.company.utils.simplefiguresdrawers.BresenhamEllipseDrawer;
+import com.company.utils.simplefiguresdrawers.BresenhamRectangleDrawer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,8 +35,13 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
     private ArrayList<Circle> circles = new ArrayList<>();
     private ArrayList<Segment> segments = new ArrayList<>();
+    private ArrayList<Ellipse> ellipses = new ArrayList<>();
+    private ArrayList<SimpleRectangle> simpleRectangles = new ArrayList<>();
+
     private Circle currentCircle;
     private Segment currentSegment;
+    private SimpleRectangle currentRectangle;
+    private Ellipse currentEllipse;
 
     public void setActiveItem(String activeItem) {
         this.activeItem = activeItem;
@@ -73,23 +77,32 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             prevPoint = current;
         }
 
-        if (activeItem.equals("Line")) {
+        if (activeItem.equals(FigureType.Line.toString())) {
             if (currentLine != null) {
                 currentLine.setP2(scrConv.s2r(current));
             }
         }
-
-        if (activeItem.equals("Circle")) {
+        if (activeItem.equals(FigureType.Circle.toString())) {
             if (currentCircle != null) {
                 currentCircle.moveMarkers(currentCircle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                 currentCircle.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
             }
         }
-        if (activeItem.equals("Segment")) {
+        if (activeItem.equals(FigureType.Segment.toString())) {
             if (currentSegment != null) {
                 currentSegment.moveMarkers(currentSegment.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                 currentSegment.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
             }
+        }
+        if (activeItem.equals(FigureType.Rectangle.toString())) {
+            if (currentRectangle != null) {
+                currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+            }
+        }
+        if (activeItem.equals(FigureType.Ellipse.toString())) {
+            currentEllipse.moveMarkers(currentEllipse.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+            currentEllipse.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
         }
         repaint();
     }
@@ -100,6 +113,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             prevPoint = new ScreenPoint(e.getX(), e.getY());
         } else if (e.getButton() == MouseEvent.BUTTON1) {
             ScreenPoint currentPoint = new ScreenPoint(e.getX(), e.getY());
+
             if (activeItem.equals(FigureType.Circle.toString())) {
                 for (Circle f : circles) {
                     if (f.hitCursor(scrConv.s2r(currentPoint))) {
@@ -112,13 +126,11 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 if (!circles.contains(currentCircle) || currentCircle == null) {
                     currentCircle = new Circle(scrConv.s2r(currentPoint), 1);
                 }
-            } else if (activeItem.equals(FigureType.Line.toString())) {
-                if (e.getButton() == MouseEvent.BUTTON3)
-                    prevPoint = new ScreenPoint(e.getX(), e.getY());
-                else if (e.getButton() == MouseEvent.BUTTON1) {
-                    currentLine = new Line(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
-                }
-            } else if (activeItem.equals(FigureType.Segment.toString())) {
+            }
+            if (activeItem.equals(FigureType.Line.toString())) {
+                currentLine = new Line(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+            }
+            if (activeItem.equals(FigureType.Segment.toString())) {
                 for (Segment f : segments) {
                     if (f.hitCursor(scrConv.s2r(currentPoint))) {
                         currentSegment = f;
@@ -129,6 +141,31 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 }
                 if (!segments.contains(currentSegment) || currentSegment == null) {
                     currentSegment = new Segment(scrConv.s2r(currentPoint), Math.PI / 2, 4 * Math.PI / 3, scrConv.value2r(100));
+                }
+            }
+            if (activeItem.equals(FigureType.Ellipse.toString())) {
+                for (Ellipse el : ellipses) {
+                    if (el.hitCursor(scrConv.s2r(currentPoint))) {
+                        currentEllipse = el;
+                        currentEllipse.activate(true);
+                    } else {
+                        el.activate(false);
+                    }
+                }
+                if (!ellipses.contains(currentEllipse) || currentEllipse == null) {
+                    currentEllipse = new Ellipse(scrConv.s2r(currentPoint), scrConv.value2r(100), scrConv.value2r(60));
+                }
+            } else if (activeItem.equals(FigureType.Rectangle.toString())) {
+                for (SimpleRectangle r : simpleRectangles) {
+                    if (r.hitCursor(scrConv.s2r(currentPoint))) {
+                        currentRectangle = r;
+                        currentRectangle.activate(true);
+                    } else {
+                        r.activate(false);
+                    }
+                }
+                if (!simpleRectangles.contains(currentRectangle) || currentRectangle == null) {
+                    currentRectangle = new SimpleRectangle(scrConv.s2r(currentPoint), scrConv.value2r(70), scrConv.value2r(130));
                 }
             }
         }
@@ -144,7 +181,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 currentLine = null;
             }
         }
-        //stretching = false;
         repaint();
     }
 
@@ -175,6 +211,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         LineDrawer ld = new BresenhamLineDrawer(pixelDrawer);
         BresenhamCircleDrawer circleDrawer = new BresenhamCircleDrawer();
         SegmentDrawer arcDrawer = new SegmentDrawer();
+        BresenhamRectangleDrawer rectangleDrawer = new BresenhamRectangleDrawer();
+        BresenhamEllipseDrawer ellipseDrawer = new BresenhamEllipseDrawer();
 
         drawCoordinates(ld, xAxis, yAxis, (int) scrConv.getRealW(), (int) scrConv.getRealH(), bi_g);
 
@@ -192,7 +230,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             circleDrawer.draw(currentCircle, new Color(0x73C8EC), scrConv, pixelDrawer);
             currentCircle.drawMarkers(ld, scrConv);
         }
-        bi_g.setColor(Color.RED);
         for (Segment c :
                 segments) {
             arcDrawer.draw(c, Color.BLACK, scrConv, pixelDrawer);
@@ -200,6 +237,22 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         if (currentSegment != null) {
             arcDrawer.draw(currentSegment, new Color(0x73C8EC), scrConv, pixelDrawer);
             currentSegment.drawMarkers(ld, scrConv);
+        }
+        for (SimpleRectangle r :
+                simpleRectangles) {
+            rectangleDrawer.draw(r, Color.BLACK, scrConv, pixelDrawer);
+        }
+        if (currentRectangle != null) {
+            rectangleDrawer.draw(currentRectangle, new Color(0x73C8EC), scrConv, pixelDrawer);
+            currentRectangle.drawMarkers(ld, scrConv);
+        }
+        for (Ellipse el :
+                ellipses) {
+            ellipseDrawer.draw(el, Color.BLACK, scrConv, pixelDrawer);
+        }
+        if (currentEllipse != null) {
+            ellipseDrawer.draw(currentEllipse, new Color(0x73C8EC), scrConv, pixelDrawer);
+            currentEllipse.drawMarkers(ld, scrConv);
         }
 
         bi_g.dispose();
@@ -268,8 +321,14 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     circles.add(currentCircle);
                 if (currentSegment != null)
                     segments.add(currentSegment);
+                if(currentRectangle!=null)
+                    simpleRectangles.add(currentRectangle);
+                if (currentEllipse!=null)
+                    ellipses.add(currentEllipse);
                 currentCircle = null;
                 currentSegment = null;
+                currentRectangle = null;
+                currentEllipse = null;
                 repaint();
             } catch (Exception exp) {
                 JOptionPane.showMessageDialog(null, "You must firstly choose the coordinates by clicking left button of your mouse");
@@ -301,15 +360,28 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             currentCircle = null;
             currentLine = null;
             currentSegment = null;
+            currentRectangle = null;
+            currentEllipse = null;
             repaint();
         }
         if (e.getKeyCode() == KeyEvent.VK_D) {
-            if (currentCircle != null)
+            if (currentCircle != null) {
                 circles.remove(currentCircle);
-            currentCircle = null;
-            if (currentSegment != null)
+                currentCircle = null;
+            }
+            if (currentSegment != null) {
                 segments.remove(currentSegment);
-            currentSegment = null;
+                currentSegment = null;
+            }
+            if (currentEllipse != null) {
+                ellipses.remove(currentEllipse);
+                currentEllipse = null;
+            }
+            if (currentRectangle != null) {
+                simpleRectangles.remove(currentRectangle);
+                currentRectangle = null;
+            }
+
             repaint();
         }
     }

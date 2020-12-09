@@ -1,12 +1,12 @@
-package com.company.circledrawers;
+package com.company.utils.simplefiguresdrawers;
 
 import com.company.figures.Circle;
 import com.company.linedrawers.BresenhamLineDrawer;
 import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
 import com.company.utils.ScreenConverter;
-import com.company.utils.drawers.CircleDrawer;
-import com.company.utils.drawers.PixelDrawer;
+import com.company.utils.Idrawers.CircleDrawer;
+import com.company.utils.Idrawers.PixelDrawer;
 
 import java.awt.*;
 

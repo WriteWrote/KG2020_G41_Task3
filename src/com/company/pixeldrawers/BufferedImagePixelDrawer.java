@@ -1,6 +1,6 @@
 package com.company.pixeldrawers;
 
-import com.company.utils.drawers.PixelDrawer;
+import com.company.utils.Idrawers.PixelDrawer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

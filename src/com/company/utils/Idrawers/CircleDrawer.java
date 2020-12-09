@@ -1,7 +1,6 @@
-package com.company.utils.drawers;
+package com.company.utils.Idrawers;
 
 import com.company.figures.Circle;
-import com.company.points.RealPoint;
 import com.company.utils.ScreenConverter;
 
 import java.awt.*;

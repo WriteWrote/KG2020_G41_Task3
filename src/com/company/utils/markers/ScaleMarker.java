@@ -1,13 +1,13 @@
 package com.company.utils.markers;
 
 import com.company.points.RealPoint;
-import com.company.utils.drawers.LineDrawer;
-import com.company.utils.drawers.Marker;
+import com.company.utils.Idrawers.LineDrawer;
+import com.company.utils.Idrawers.MarkerDrawer;
 import com.company.utils.ScreenConverter;
 
 import java.awt.*;
 
-public class ScaleMarker implements Marker {
+public class ScaleMarker implements MarkerDrawer {
     private final int width = 11;
     private final Color color = Color.BLACK;
 

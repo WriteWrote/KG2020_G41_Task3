@@ -1,7 +1,7 @@
 package com.company.linedrawers;
 
-import com.company.utils.drawers.LineDrawer;
-import com.company.utils.drawers.PixelDrawer;
+import com.company.utils.Idrawers.LineDrawer;
+import com.company.utils.Idrawers.PixelDrawer;
 import com.company.points.ScreenPoint;
 
 import java.awt.*;

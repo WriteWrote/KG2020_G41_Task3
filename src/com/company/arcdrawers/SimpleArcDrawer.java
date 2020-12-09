@@ -1,16 +1,13 @@
 package com.company.arcdrawers;
 
 import com.company.figures.Segment;
-import com.company.linedrawers.BresenhamLineDrawer;
 import com.company.points.ScreenPoint;
 import com.company.utils.ScreenConverter;
-import com.company.utils.Idrawers.ArcDrawer;
-import com.company.utils.Idrawers.LineDrawer;
 import com.company.utils.Idrawers.PixelDrawer;
 
 import java.awt.*;
 
-public class SegmentDrawer implements ArcDrawer {
+public class SimpleArcDrawer implements com.company.utils.Idrawers.ArcDrawer {
     @Override
     public void draw(Segment segment, Color color, ScreenConverter screenConverter, PixelDrawer pixelDrawer) {
         ScreenPoint startPoint = screenConverter.r2s(segment.getPoint());
@@ -30,14 +27,6 @@ public class SegmentDrawer implements ArcDrawer {
                 pixelDrawer.setPixel(x, y, color);
             }
         }
-
-        int x1 = (int) (startPoint.getX() + radius * Math.cos(segment.getStartAngle()));
-        int y1 = (int) (startPoint.getY() + radius * Math.sin(segment.getStartAngle()));
-        int x2 = (int) (startPoint.getX() + radius * Math.cos(segment.getStartAngle() + segment.getDeltaAngle()));
-        int y2 = (int) (startPoint.getY() + radius * Math.sin(segment.getStartAngle() + segment.getDeltaAngle()));
-
-        LineDrawer ld = new BresenhamLineDrawer(pixelDrawer);
-        ld.drawLine(new ScreenPoint(x1, y1), new ScreenPoint(x2, y2), color);
     }
 
     @Override

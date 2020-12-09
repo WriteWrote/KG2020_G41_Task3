@@ -1,5 +1,6 @@
 package com.company.utils.markers;
 
+import com.company.MainPanel;
 import com.company.points.RealPoint;
 import com.company.utils.Idrawers.LineDrawer;
 import com.company.utils.Idrawers.MarkerDrawer;
@@ -36,7 +37,8 @@ public class ScaleMarker implements MarkerDrawer {
     }
 
     @Override
-    public void draw(LineDrawer ld, ScreenConverter scrConv) {
+    public void draw(LineDrawer ld) {
+        ScreenConverter scrConv = MainPanel.getScrConv();
         double x = point.getX();
         double y = point.getY();
 
@@ -49,10 +51,11 @@ public class ScaleMarker implements MarkerDrawer {
     }
 
     @Override
-    public boolean hitMarker(RealPoint checkPoint, ScreenConverter scrConv) {
-        double w = scrConv.value2r(width);
-        RealPoint u_l = new RealPoint(point.getX() - w, point.getY() - w);
-        RealPoint d_r = new RealPoint(point.getX() + w, point.getY() + w);
+    public boolean hitMarker(RealPoint checkPoint) {
+        ScreenConverter scrConv = MainPanel.getScrConv();
+        double w = scrConv.value2r(this.width);
+        RealPoint u_l = new RealPoint(point.getX() - w, point.getY() + w);
+        RealPoint d_r = new RealPoint(point.getX() + w, point.getY() - w);
         boolean n = checkPoint.getX() <= d_r.getX() && checkPoint.getX() >= u_l.getX() &&
                 checkPoint.getY() <= u_l.getY() && checkPoint.getY() >= d_r.getY();
         return checkPoint.getX() <= d_r.getY() && checkPoint.getX() >= u_l.getX() &&

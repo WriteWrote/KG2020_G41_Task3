@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class MainPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
     private ArrayList<Line> lines = new ArrayList<>();
-    private ScreenConverter scrConv = new ScreenConverter(-4, 4, 8, 8, 400, 400);
+    private static ScreenConverter scrConv = new ScreenConverter(-4, 4, 8, 8, 400, 400);
 
     private Line yAxis = new Line(0, -2, 0, 2);
     private Line xAxis = new Line(-2, 0, 2, 0);
@@ -42,6 +42,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     private Segment currentSegment;
     private SimpleRectangle currentRectangle;
     private Ellipse currentEllipse;
+    private boolean stretching = false;
 
     public void setActiveItem(String activeItem) {
         this.activeItem = activeItem;
@@ -63,6 +64,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         scrConv.setRealH(scrConv.getRealH() * scale);
         repaint();
     }
+
+    private ScreenPoint prevDrawPoint;
 
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -96,6 +99,16 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (activeItem.equals(FigureType.Rectangle.toString())) {
             if (currentRectangle != null) {
+                if (currentRectangle.hitMarkers(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())))) {
+                    /*
+                    ScreenPoint currentPoint = new ScreenPoint(e.getX(), e.getY());
+                    ScreenPoint delta = new ScreenPoint(currentPoint.getX() - prevDrawPoint.getX(),
+                            currentPoint.getY() - prevDrawPoint.getY());
+                    RealPoint deltaReal = scrConv.s2r(delta);
+*/
+                    currentRectangle.setHeight(currentRectangle.getHeight() + scrConv.value2r(1));
+                    currentRectangle.setWidth(currentRectangle.getWidth() + scrConv.value2r(1));
+                }
                 currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                 currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
             }
@@ -164,11 +177,21 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                         r.activate(false);
                     }
                 }
+                if (currentRectangle != null && currentRectangle.hitMarkers(scrConv.s2r(currentPoint))) {
+                    //JOptionPane.showMessageDialog(null, "Success");
+                    stretching = true;
+                    prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
+                }
                 if (!simpleRectangles.contains(currentRectangle) || currentRectangle == null) {
                     currentRectangle = new SimpleRectangle(scrConv.s2r(currentPoint), scrConv.value2r(70), scrConv.value2r(130));
                 }
             }
         }
+    }
+
+
+    public static ScreenConverter getScrConv() {
+        return scrConv;
     }
 
     @Override
@@ -228,7 +251,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (currentCircle != null) {
             circleDrawer.draw(currentCircle, new Color(0x73C8EC), scrConv, pixelDrawer);
-            currentCircle.drawMarkers(ld, scrConv);
+            currentCircle.drawMarkers(ld);
         }
         for (Segment c :
                 segments) {
@@ -236,7 +259,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (currentSegment != null) {
             arcDrawer.draw(currentSegment, new Color(0x73C8EC), scrConv, pixelDrawer);
-            currentSegment.drawMarkers(ld, scrConv);
+            currentSegment.drawMarkers(ld);
         }
         for (SimpleRectangle r :
                 simpleRectangles) {
@@ -244,7 +267,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (currentRectangle != null) {
             rectangleDrawer.draw(currentRectangle, new Color(0x73C8EC), scrConv, pixelDrawer);
-            currentRectangle.drawMarkers(ld, scrConv);
+            currentRectangle.drawMarkers(ld);
         }
         for (Ellipse el :
                 ellipses) {
@@ -252,7 +275,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (currentEllipse != null) {
             ellipseDrawer.draw(currentEllipse, new Color(0x73C8EC), scrConv, pixelDrawer);
-            currentEllipse.drawMarkers(ld, scrConv);
+            currentEllipse.drawMarkers(ld);
         }
 
         bi_g.dispose();
@@ -321,9 +344,9 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     circles.add(currentCircle);
                 if (currentSegment != null)
                     segments.add(currentSegment);
-                if(currentRectangle!=null)
+                if (currentRectangle != null)
                     simpleRectangles.add(currentRectangle);
-                if (currentEllipse!=null)
+                if (currentEllipse != null)
                     ellipses.add(currentEllipse);
                 currentCircle = null;
                 currentSegment = null;

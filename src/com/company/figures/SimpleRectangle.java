@@ -24,21 +24,21 @@ public class SimpleRectangle {
         marker_DR = new ScaleMarker(new RealPoint(point.getX() + width, point.getY() - height));
     }
 
-    public boolean hitMarkers(RealPoint currPoint, ScreenConverter screenConverter) {
+    public boolean hitMarkers(RealPoint currPoint) {
         ScaleMarker[] markers = new ScaleMarker[]{marker_UL, marker_UR, marker_DL, marker_DR};
         for (ScaleMarker m :
                 markers) {
-            if (m.hitMarker(currPoint, screenConverter))
+            if (m.hitMarker(currPoint))
                 return true;
         }
         return false;
     }
 
-    public void drawMarkers(LineDrawer g, ScreenConverter screenConverter) {
-        marker_DR.draw(g, screenConverter);
-        marker_UL.draw(g, screenConverter);
-        marker_UR.draw(g, screenConverter);
-        marker_DL.draw(g, screenConverter);
+    public void drawMarkers(LineDrawer g) {
+        marker_DR.draw(g);
+        marker_UL.draw(g);
+        marker_UR.draw(g);
+        marker_DL.draw(g);
     }
 
     public boolean hitCursor(RealPoint currP) {

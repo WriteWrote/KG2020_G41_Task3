@@ -40,7 +40,7 @@ public class BresenhamCircleDrawer implements CircleDrawer {
             }
         }
         if (circle.isActivated()) {
-            circle.drawMarkers(new BresenhamLineDrawer(pixelDrawer), screenConverter);
+            circle.drawMarkers(new BresenhamLineDrawer(pixelDrawer));
         }
     }
 

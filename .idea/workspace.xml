@@ -110,9 +110,14 @@
           <option name="timeStamp" value="61" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/company/figures/SimpleRectangle.java</url>
-          <line>30</line>
-          <option name="timeStamp" value="64" />
+          <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
+          <line>102</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/company/MainPanel.java</url>
+          <line>191</line>
+          <option name="timeStamp" value="66" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -113,9 +113,11 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 }
                 if (!stretching) {
                     // check this one later
-                    currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                    //currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                     ScreenPoint buff = scrConv.r2s(currentRectangle.getPoint());
-                    currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY()+d_y)));
+                    currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
+                    currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
+                    prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
                     //currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                     //currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                 }
@@ -182,6 +184,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     if (r.hitCursor(scrConv.s2r(currentPoint))) {
                         currentRectangle = r;
                         currentRectangle.activate(true);
+                        prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
                     } else {
                         r.activate(false);
                     }

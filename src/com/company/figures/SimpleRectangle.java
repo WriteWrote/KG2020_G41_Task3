@@ -52,16 +52,10 @@ public class SimpleRectangle {
     public void moveMarkers(RealPoint start, RealPoint end) {
         double dx = end.getX() - start.getX();
         double dy = end.getY() - start.getY();
-        List<ScaleMarker> list = new ArrayList<>();
-        list.add(marker_DL);
-        list.add(marker_DR);
-        list.add(marker_UL);
-        list.add(marker_UR);
-        for (ScaleMarker m :
-                list) {
-            m.setX(m.getX() + dx);
-            m.setY(m.getY() + dy);
-        }
+        marker_UL = new ScaleMarker(new RealPoint(point.getX() + dx, point.getY() + dy));
+        marker_DL = new ScaleMarker(new RealPoint(point.getX() + dx, point.getY() - height + dy));
+        marker_UR = new ScaleMarker(new RealPoint(point.getX() + dx + width, point.getY() + dy));
+        marker_DR = new ScaleMarker(new RealPoint(point.getX() + width + dx, point.getY() - height + dy));
     }
 
     public RealPoint getPoint() {

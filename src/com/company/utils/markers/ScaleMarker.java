@@ -57,7 +57,7 @@ public class ScaleMarker implements MarkerDrawer {
         RealPoint u_l = new RealPoint(point.getX() - w, point.getY() + w);
         RealPoint d_r = new RealPoint(point.getX() + w, point.getY() - w);
 
-        return checkPoint.getX() <= d_r.getY() && checkPoint.getX() >= u_l.getX() &&
+        return checkPoint.getX() <= d_r.getX() && checkPoint.getX() >= u_l.getX() &&
                 checkPoint.getY() <= u_l.getY() && checkPoint.getY() >= d_r.getY();
     }
 }

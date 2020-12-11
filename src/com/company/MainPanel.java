@@ -42,7 +42,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     private Segment currentSegment;
     private SimpleRectangle currentRectangle;
     private Ellipse currentEllipse;
-    private boolean stretching = false;
+    private boolean scaling = false;
 
     public void setActiveItem(String activeItem) {
         this.activeItem = activeItem;
@@ -103,24 +103,21 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 int d_x = stretchPoint.getX() - prevDrawPoint.getX();
                 int d_y = stretchPoint.getY() - prevDrawPoint.getY();
                 //prevPoint = scrConv.r2s(currentRectangle.getPoint());
-                if (currentRectangle.hitMarkers(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())))) {
-
-                    currentRectangle.setHeight(currentRectangle.getHeight() + scrConv.value2r(d_y));
-                    currentRectangle.setWidth(currentRectangle.getWidth() + scrConv.value2r(d_x));
-                    //currentRectangle.setHeight(currentRectangle.getHeight() + scrConv.value2r(1));
-                    //currentRectangle.setWidth(currentRectangle.getWidth() + scrConv.value2r(1));
-                    stretching = false;
-                }
-                if (!stretching) {
+                if (!scaling) {
                     // check this one later
                     //currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                     ScreenPoint buff = scrConv.r2s(currentRectangle.getPoint());
                     currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
                     currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
                     prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
-                    //currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
-                    //currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                 }
+                if (currentRectangle.hitMarkers(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())))) {
+
+                    currentRectangle.setHeight(currentRectangle.getHeight() + scrConv.value2r(d_y));
+                    currentRectangle.setWidth(currentRectangle.getWidth() + scrConv.value2r(d_x));
+                    scaling = false;
+                }
+
             }
         }
         if (activeItem.equals(FigureType.Ellipse.toString())) {
@@ -191,7 +188,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 }
                 if (currentRectangle != null && currentRectangle.hitMarkers(scrConv.s2r(currentPoint))) {
                     //JOptionPane.showMessageDialog(null, "Success");
-                    stretching = true;
+                    scaling = true;
                     prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
                 }
                 if (!simpleRectangles.contains(currentRectangle) || currentRectangle == null) {

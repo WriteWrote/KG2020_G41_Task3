@@ -43,6 +43,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     private SimpleRectangle currentRectangle;
     private Ellipse currentEllipse;
     private boolean scalingNow = false, startedScaling = false;
+    private boolean angleChanging = false;
 
     public void setActiveItem(String activeItem) {
         this.activeItem = activeItem;
@@ -69,20 +70,23 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        ScreenPoint current = new ScreenPoint(e.getX(), e.getY());
+        ScreenPoint currentPoint = new ScreenPoint(e.getX(), e.getY());
         if (prevPoint != null) {
-            ScreenPoint delta = new ScreenPoint(current.getX() - prevPoint.getX(), current.getY() - prevPoint.getY());
+            ScreenPoint delta = new ScreenPoint(currentPoint.getX() - prevPoint.getX(), currentPoint.getY() - prevPoint.getY());
             RealPoint deltaReal = scrConv.s2r(delta);
             RealPoint zeroReal = scrConv.s2r(new ScreenPoint(0, 0));
             RealPoint vector = new RealPoint(deltaReal.getX() - zeroReal.getX(), deltaReal.getY() - zeroReal.getY());
             scrConv.setCornerX(scrConv.getCornerX() - vector.getX());
             scrConv.setCornerY(scrConv.getCornerY() - vector.getY());
-            prevPoint = current;
+            prevPoint = currentPoint;
         }
+
+        int d_x = currentPoint.getX() - prevDrawPoint.getX();
+        int d_y = currentPoint.getY() - prevDrawPoint.getY();
 
         if (activeItem.equals(FigureType.Line.toString())) {
             if (currentLine != null) {
-                currentLine.setP2(scrConv.s2r(current));
+                currentLine.setP2(scrConv.s2r(currentPoint));
             }
         }
         if (activeItem.equals(FigureType.Circle.toString())) {
@@ -93,29 +97,37 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (activeItem.equals(FigureType.Segment.toString())) {
             if (currentSegment != null) {
-                currentSegment.moveMarkers(currentSegment.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
-                currentSegment.setPoint(scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
+                if (!scalingNow && !angleChanging) {
+                    ScreenPoint buff = scrConv.r2s(currentSegment.getPoint());
+                    currentSegment.moveMarkers(currentSegment.getPoint(),
+                            scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
+                    currentSegment.setPoint(scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
+                    prevDrawPoint = currentPoint;
+                }
+                if (startedScaling) {
+                    currentSegment.setRadius(currentSegment.getRadius() + scrConv.value2r(d_x));
+                    scalingNow = false;
+                }
+                if (angleChanging) {
+                    currentSegment.setDeltaAngle(currentSegment.getDeltaAngle() - Math.atan((double) d_y / (double) d_x)/10);
+                }
             }
         }
         if (activeItem.equals(FigureType.Rectangle.toString())) {
             if (currentRectangle != null) {
-                ScreenPoint deltaPoint = new ScreenPoint(e.getX(), e.getY());
-                int d_x = deltaPoint.getX() - prevDrawPoint.getX();
-                int d_y = deltaPoint.getY() - prevDrawPoint.getY();
                 if (!scalingNow) {
-                    // check this one later
-                    //currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
                     ScreenPoint buff = scrConv.r2s(currentRectangle.getPoint());
-                    currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
+                    currentRectangle.moveMarkers(currentRectangle.getPoint(),
+                            scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
+                    // this might be the cause of +30;+30 bug!
                     currentRectangle.setPoint(scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
-                    prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
+                    prevDrawPoint = currentPoint;// new ScreenPoint(e.getX(), e.getY());
                 }
                 if (startedScaling) {
                     currentRectangle.setHeight(currentRectangle.getHeight() + scrConv.value2r(d_y));
                     currentRectangle.setWidth(currentRectangle.getWidth() + scrConv.value2r(d_x));
                     scalingNow = false;
                 }
-
             }
         }
         if (activeItem.equals(FigureType.Ellipse.toString())) {
@@ -153,12 +165,25 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     if (f.hitCursor(scrConv.s2r(currentPoint))) {
                         currentSegment = f;
                         currentSegment.activate(true);
+                        prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
                     } else {
                         f.activate(false);
                     }
                 }
+                if (currentSegment != null) {
+                    if (currentSegment.hitScaleMarkers(scrConv.s2r(currentPoint))) {
+                        scalingNow = true;
+                        startedScaling = true;
+                        prevDrawPoint = currentPoint;
+                    }
+                    if (currentSegment.hitAngleMarkers(scrConv.s2r(currentPoint))) {
+                        angleChanging = true;
+                        prevDrawPoint = currentPoint;
+                    }
+                }
                 if (!segments.contains(currentSegment) || currentSegment == null) {
-                    currentSegment = new Segment(scrConv.s2r(currentPoint), Math.PI / 2, 4 * Math.PI / 3, scrConv.value2r(100));
+                    currentSegment = new Segment(scrConv.s2r(currentPoint), Math.PI / 2, 4 * Math.PI / 3, scrConv.value2r(70));
+                    prevDrawPoint = new ScreenPoint(currentPoint.getX(), currentPoint.getY());
                 }
             }
             if (activeItem.equals(FigureType.Ellipse.toString())) {
@@ -198,7 +223,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
     }
 
-
     public static ScreenConverter getScrConv() {
         return scrConv;
     }
@@ -213,6 +237,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 currentLine = null;
             }
             startedScaling = false;
+            angleChanging = false;
         }
         repaint();
     }

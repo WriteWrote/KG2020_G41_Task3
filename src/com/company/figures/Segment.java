@@ -3,6 +3,7 @@ package com.company.figures;
 import com.company.points.RealPoint;
 import com.company.utils.ScreenConverter;
 import com.company.utils.Idrawers.LineDrawer;
+import com.company.utils.markers.AngleMarker;
 import com.company.utils.markers.ScaleMarker;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class Segment {
     private double deltaAngle;
     private double radius;
     private ScaleMarker marker_UL, marker_UR, marker_DL, marker_DR;
+    private AngleMarker startA_marker, endA_marker;
     private boolean isActivated = false;
 
     public Segment(RealPoint point, double startAngle, double deltaAngle, double radius) {
@@ -26,9 +28,14 @@ public class Segment {
         marker_DL = new ScaleMarker(new RealPoint(point.getX() - radius, point.getY() + radius));
         marker_UR = new ScaleMarker(new RealPoint(point.getX() + radius, point.getY() - radius));
         marker_DR = new ScaleMarker(new RealPoint(point.getX() + radius, point.getY() + radius));
+
+        startA_marker = new AngleMarker(new RealPoint(point.getX() + radius * Math.cos(startAngle),
+                point.getY() - radius * Math.sin(startAngle)));
+        endA_marker = new AngleMarker(new RealPoint(point.getX() + radius * Math.cos(startAngle + deltaAngle),
+                point.getY() - radius * Math.sin(startAngle + deltaAngle)));
     }
 
-    public boolean hitMarkers(RealPoint currPoint) {
+    public boolean hitScaleMarkers(RealPoint currPoint) {
         ScaleMarker[] markers = new ScaleMarker[]{marker_UL, marker_UR, marker_DL, marker_DR};
         for (ScaleMarker m :
                 markers) {
@@ -38,11 +45,22 @@ public class Segment {
         return false;
     }
 
+    public boolean hitAngleMarkers(RealPoint currPoint) {
+        if (endA_marker.hitMarker(currPoint))
+            return true;
+        if (startA_marker.hitMarker(currPoint))
+            return true;
+        return false;
+    }
+
     public void drawMarkers(LineDrawer g) {
         marker_DR.draw(g);
         marker_UL.draw(g);
         marker_UR.draw(g);
         marker_DL.draw(g);
+
+        startA_marker.draw(g);
+        endA_marker.draw(g);
     }
 
     public boolean hitCursor(RealPoint currP) {
@@ -56,16 +74,15 @@ public class Segment {
     public void moveMarkers(RealPoint start, RealPoint end) {
         double dx = end.getX() - start.getX();
         double dy = end.getY() - start.getY();
-        List<ScaleMarker> list = new ArrayList<>();
-        list.add(marker_DL);
-        list.add(marker_DR);
-        list.add(marker_UL);
-        list.add(marker_UR);
-        for (ScaleMarker m :
-                list) {
-            m.setX(m.getX() + dx);
-            m.setY(m.getY() + dy);
-        }
+        marker_UL = new ScaleMarker(new RealPoint(point.getX() - radius + dx, point.getY() - radius + dy));
+        marker_DL = new ScaleMarker(new RealPoint(point.getX() - radius + dx, point.getY() + radius + dy));
+        marker_UR = new ScaleMarker(new RealPoint(point.getX() + radius + dx, point.getY() - radius + dy));
+        marker_DR = new ScaleMarker(new RealPoint(point.getX() + radius + dx, point.getY() + radius + dy));
+
+        startA_marker = new AngleMarker(new RealPoint(point.getX() + radius * Math.cos(startAngle),
+                point.getY() - radius * Math.sin(startAngle)));
+        endA_marker = new AngleMarker(new RealPoint(point.getX() + radius * Math.cos(startAngle + deltaAngle),
+                point.getY() - radius * Math.sin(startAngle + deltaAngle)));
     }
 
     public RealPoint getPoint() {

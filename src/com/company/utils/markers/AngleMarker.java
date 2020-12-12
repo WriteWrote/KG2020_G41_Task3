@@ -8,13 +8,13 @@ import com.company.utils.ScreenConverter;
 
 import java.awt.*;
 
-public class ScaleMarker implements MarkerDrawer {
+public class AngleMarker implements MarkerDrawer {
     private final int width = 11;
-    private final Color color = new Color(0x299735);
+    private final Color color = new Color(0x8C1042);
 
     private RealPoint point;
 
-    public ScaleMarker(RealPoint point) {
+    public AngleMarker(RealPoint point) {
         this.point = point;
     }
 
@@ -37,17 +37,19 @@ public class ScaleMarker implements MarkerDrawer {
     }
 
     @Override
-    public void draw(LineDrawer ld) {
+    public void draw(LineDrawer lineDrawer) {
         ScreenConverter scrConv = MainPanel.getScrConv();
         double x = point.getX();
         double y = point.getY();
 
-        RealPoint buff = new RealPoint(x - scrConv.value2r(width / 2), y);
+        RealPoint buff = new RealPoint(x - scrConv.value2r(width / 2), y + scrConv.value2r(width / 2));
 
-        ld.drawLine(scrConv.r2s(buff), scrConv.r2s(new RealPoint(buff.getX() + scrConv.value2r(width), buff.getY())), color);
-        buff.setX(x);
-        buff.setY(y - scrConv.value2r(width / 2));
-        ld.drawLine(scrConv.r2s(buff), scrConv.r2s(new RealPoint(buff.getX(), buff.getY() + scrConv.value2r(width))), color);
+        lineDrawer.drawLine(scrConv.r2s(buff), scrConv.r2s(new RealPoint(buff.getX() + scrConv.value2r(width), buff.getY())), color);
+        lineDrawer.drawLine(scrConv.r2s(buff), scrConv.r2s(new RealPoint(buff.getX(), buff.getY() - scrConv.value2r(width))), color);
+        buff.setX(buff.getX() + scrConv.value2r(width));
+        buff.setY(buff.getY() - scrConv.value2r(width));
+        lineDrawer.drawLine(scrConv.r2s(buff), scrConv.r2s(new RealPoint(buff.getX(), buff.getY() + scrConv.value2r(width))), color);
+        lineDrawer.drawLine(scrConv.r2s(buff), scrConv.r2s(new RealPoint(buff.getX() - scrConv.value2r(width), buff.getY())), color);
     }
 
     @Override

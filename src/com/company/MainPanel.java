@@ -99,9 +99,9 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (activeItem.equals(FigureType.Rectangle.toString())) {
             if (currentRectangle != null) {
-                ScreenPoint stretchPoint = new ScreenPoint(e.getX(), e.getY());
-                int d_x = stretchPoint.getX() - prevDrawPoint.getX();
-                int d_y = stretchPoint.getY() - prevDrawPoint.getY();
+                ScreenPoint deltaPoint = new ScreenPoint(e.getX(), e.getY());
+                int d_x = deltaPoint.getX() - prevDrawPoint.getX();
+                int d_y = deltaPoint.getY() - prevDrawPoint.getY();
                 if (!scalingNow) {
                     // check this one later
                     //currentRectangle.moveMarkers(currentRectangle.getPoint(), scrConv.s2r(new ScreenPoint(e.getX(), e.getY())));
@@ -190,7 +190,9 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
                 }
                 if (!simpleRectangles.contains(currentRectangle) || currentRectangle == null) {
-                    currentRectangle = new SimpleRectangle(scrConv.s2r(currentPoint), scrConv.value2r(70), scrConv.value2r(130));
+                    currentRectangle = new SimpleRectangle(scrConv.s2r(new ScreenPoint(currentPoint.getX(), currentPoint.getY())), scrConv.value2r(70), scrConv.value2r(130));
+                    prevDrawPoint = new ScreenPoint(currentPoint.getX(), currentPoint.getY());
+
                 }
             }
         }

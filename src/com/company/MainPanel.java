@@ -158,6 +158,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             prevPoint = new ScreenPoint(e.getX(), e.getY());
         } else if (e.getButton() == MouseEvent.BUTTON1) {
             ScreenPoint currentPoint = new ScreenPoint(e.getX(), e.getY());
+            prevDrawPoint = currentPoint;
 
             if (activeItem.equals(FigureType.Circle.toString())) {
                 for (Circle f : circles) {
@@ -180,7 +181,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     if (f.hitCursor(scrConv.s2r(currentPoint))) {
                         currentSegment = f;
                         currentSegment.activate(true);
-                        prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
+                        //prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
                     } else {
                         f.activate(false);
                     }
@@ -189,20 +190,20 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     if (currentSegment.hitScaleMarkers(scrConv.s2r(currentPoint))) {
                         scalingNow = true;
                         startedScaling = true;
-                        prevDrawPoint = currentPoint;
+                        //prevDrawPoint = currentPoint;
                     }
                     if (currentSegment.hitStartAngleMarker(scrConv.s2r(currentPoint))) {
                         startAngleChanging = true;
-                        prevDrawPoint = currentPoint;
+                        //prevDrawPoint = currentPoint;
                     }
                     if (currentSegment.hitEndAngleMarker(scrConv.s2r(currentPoint))) {
                         endAngleChanging = true;
-                        prevDrawPoint = currentPoint;
+                        //prevDrawPoint = currentPoint;
                     }
                 }
                 if (!segments.contains(currentSegment) || currentSegment == null) {
                     currentSegment = new Segment(scrConv.s2r(currentPoint), Math.PI / 2, 4 * Math.PI / 3, scrConv.value2r(70));
-                    prevDrawPoint = new ScreenPoint(currentPoint.getX(), currentPoint.getY());
+                    //prevDrawPoint = new ScreenPoint(currentPoint.getX(), currentPoint.getY());
                 }
             }
             if (activeItem.equals(FigureType.Ellipse.toString())) {
@@ -223,7 +224,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     if (r.hitCursor(scrConv.s2r(currentPoint))) {
                         currentRectangle = r;
                         currentRectangle.activate(true);
-                        prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
+                        //prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
                     } else {
                         r.activate(false);
                     }
@@ -231,11 +232,11 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 if (currentRectangle != null && currentRectangle.hitMarkers(scrConv.s2r(currentPoint))) {
                     scalingNow = true;
                     startedScaling = true;
-                    prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
+                    //prevDrawPoint = new ScreenPoint(e.getX(), e.getY());
                 }
                 if (!simpleRectangles.contains(currentRectangle) || currentRectangle == null) {
                     currentRectangle = new SimpleRectangle(scrConv.s2r(new ScreenPoint(currentPoint.getX(), currentPoint.getY())), scrConv.value2r(70), scrConv.value2r(130));
-                    prevDrawPoint = new ScreenPoint(currentPoint.getX(), currentPoint.getY());
+                    //prevDrawPoint = new ScreenPoint(currentPoint.getX(), currentPoint.getY());
 
                 }
             }

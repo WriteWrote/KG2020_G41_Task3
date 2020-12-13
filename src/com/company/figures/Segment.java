@@ -53,6 +53,14 @@ public class Segment {
         return false;
     }
 
+    public boolean hitStartAngleMarker(RealPoint currPoint) {
+        return startA_marker.hitMarker(currPoint);
+    }
+
+    public boolean hitEndAngleMarker(RealPoint currPoint) {
+        return endA_marker.hitMarker(currPoint);
+    }
+
     public void drawMarkers(LineDrawer g) {
         marker_DR.draw(g);
         marker_UL.draw(g);
@@ -79,6 +87,13 @@ public class Segment {
         marker_UR = new ScaleMarker(new RealPoint(point.getX() + radius + dx, point.getY() - radius + dy));
         marker_DR = new ScaleMarker(new RealPoint(point.getX() + radius + dx, point.getY() + radius + dy));
 
+        startA_marker = new AngleMarker(new RealPoint(point.getX() + radius * Math.cos(startAngle),
+                point.getY() - radius * Math.sin(startAngle)));
+        endA_marker = new AngleMarker(new RealPoint(point.getX() + radius * Math.cos(startAngle + deltaAngle),
+                point.getY() - radius * Math.sin(startAngle + deltaAngle)));
+    }
+
+    public void moveMarkers() {
         startA_marker = new AngleMarker(new RealPoint(point.getX() + radius * Math.cos(startAngle),
                 point.getY() - radius * Math.sin(startAngle)));
         endA_marker = new AngleMarker(new RealPoint(point.getX() + radius * Math.cos(startAngle + deltaAngle),

@@ -2,6 +2,7 @@ package com.company;
 
 
 import com.company.arcdrawers.SegmentDrawer;
+import com.company.utils.Idrawers.*;
 import com.company.utils.simplefiguresdrawers.BresenhamCircleDrawer;
 import com.company.figures.*;
 
@@ -9,9 +10,7 @@ import com.company.linedrawers.BresenhamLineDrawer;
 import com.company.pixeldrawers.BufferedImagePixelDrawer;
 import com.company.points.RealPoint;
 import com.company.points.ScreenPoint;
-import com.company.utils.Idrawers.PixelDrawer;
 import com.company.utils.ScreenConverter;
-import com.company.utils.Idrawers.LineDrawer;
 import com.company.utils.simplefiguresdrawers.BresenhamEllipseDrawer;
 import com.company.utils.simplefiguresdrawers.BresenhamRectangleDrawer;
 
@@ -43,7 +42,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
     private SimpleRectangle currentRectangle;
     private Ellipse currentEllipse;
     private boolean scalingNow = false, startedScaling = false;
-    private boolean angleChanging = false;
+    private boolean startAngleChanging = false;
+    private boolean endAngleChanging = false;
 
     public void setActiveItem(String activeItem) {
         this.activeItem = activeItem;
@@ -97,7 +97,7 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
         }
         if (activeItem.equals(FigureType.Segment.toString())) {
             if (currentSegment != null) {
-                if (!scalingNow && !angleChanging) {
+                if (!scalingNow && !startAngleChanging && !endAngleChanging) {
                     ScreenPoint buff = scrConv.r2s(currentSegment.getPoint());
                     currentSegment.moveMarkers(currentSegment.getPoint(),
                             scrConv.s2r(new ScreenPoint(buff.getX() + d_x, buff.getY() + d_y)));
@@ -108,8 +108,23 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                     currentSegment.setRadius(currentSegment.getRadius() + scrConv.value2r(d_x));
                     scalingNow = false;
                 }
-                if (angleChanging) {
-                    currentSegment.setDeltaAngle(currentSegment.getDeltaAngle() - Math.atan((double) d_y / (double) d_x)/10);
+                if (endAngleChanging) {
+                    if (d_x > 0 && d_y > 0)
+                        currentSegment.setDeltaAngle(currentSegment.getDeltaAngle() + Math.atan((double) d_y / (double) d_x) / 40);
+                    if (d_x < 0 && d_y < 0)
+                        currentSegment.setDeltaAngle(currentSegment.getDeltaAngle() - Math.atan((double) d_y / (double) d_x) / 40);
+                    currentSegment.moveMarkers();
+                }
+                if (startAngleChanging) {
+                    if (d_x > 0 && d_y > 0) {
+                        currentSegment.setStartAngle(currentSegment.getStartAngle() - Math.atan((double) d_y / (double) d_x) / 40);
+                        currentSegment.setDeltaAngle(currentSegment.getDeltaAngle() + Math.atan((double) d_y / (double) d_x) / 40);
+                    }
+                    if (d_x < 0 && d_y < 0) {
+                        currentSegment.setStartAngle(currentSegment.getStartAngle() + Math.atan((double) d_y / (double) d_x) / 40);
+                        currentSegment.setDeltaAngle(currentSegment.getDeltaAngle() - Math.atan((double) d_y / (double) d_x) / 40);
+                    }
+                    currentSegment.moveMarkers();
                 }
             }
         }
@@ -176,8 +191,12 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                         startedScaling = true;
                         prevDrawPoint = currentPoint;
                     }
-                    if (currentSegment.hitAngleMarkers(scrConv.s2r(currentPoint))) {
-                        angleChanging = true;
+                    if (currentSegment.hitStartAngleMarker(scrConv.s2r(currentPoint))) {
+                        startAngleChanging = true;
+                        prevDrawPoint = currentPoint;
+                    }
+                    if (currentSegment.hitEndAngleMarker(scrConv.s2r(currentPoint))) {
+                        endAngleChanging = true;
                         prevDrawPoint = currentPoint;
                     }
                 }
@@ -237,7 +256,8 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
                 currentLine = null;
             }
             startedScaling = false;
-            angleChanging = false;
+            startAngleChanging = false;
+            endAngleChanging = false;
         }
         repaint();
     }
@@ -274,6 +294,44 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
 
         drawCoordinates(ld, xAxis, yAxis, (int) scrConv.getRealW(), (int) scrConv.getRealH(), bi_g);
 
+        drawAll(pixelDrawer, ld, circleDrawer, arcDrawer, rectangleDrawer, ellipseDrawer);
+
+        bi_g.dispose();
+        g.drawImage(bi, 0, 0, null);
+    }
+
+    private void drawLine(LineDrawer ld, Line l, Color color) {
+        ld.drawLine(scrConv.r2s(l.getP1()), scrConv.r2s(l.getP2()), color);
+    }
+
+    private void drawCoordinates(LineDrawer lineDrawer, Line xAxis, Line yAxis, int w, int h, Graphics graphics) {
+        Line xL = new Line(new RealPoint(xAxis.getP1().getX() - scrConv.getRealW() / 2, xAxis.getP1().getY()),
+                new RealPoint(xAxis.getP2().getX() + scrConv.getRealW() / 2, xAxis.getP2().getY()));
+        Line yL = new Line(new RealPoint(yAxis.getP1().getX(), yAxis.getP1().getY() - scrConv.getRealH() / 2),
+                new RealPoint(yAxis.getP2().getX(), yAxis.getP2().getY() + scrConv.getRealH() / 2));
+        drawLine(lineDrawer, xL, Color.LIGHT_GRAY);
+        drawLine(lineDrawer, yL, Color.LIGHT_GRAY);
+        for (int i = -w / 2; i < w / 2; i++) {
+            RealPoint rP_x1 = new RealPoint(i, xAxis.getP1().getY() - 0.2);
+            RealPoint rP_x2 = new RealPoint(i, xAxis.getP1().getY() + 0.2);
+            Line xLine = new Line(rP_x1, rP_x2);
+            drawLine(lineDrawer, xLine, Color.LIGHT_GRAY);
+
+            ScreenPoint sP = scrConv.r2s(rP_x1);
+            graphics.drawString(Integer.toString(i), sP.getX(), sP.getY());
+        }
+        for (int i = -h / 2; i < h / 2; i++) {
+            RealPoint rP_y1 = new RealPoint(yAxis.getP1().getX() - 0.2, i);
+            RealPoint rP_y2 = new RealPoint(yAxis.getP1().getX() + 0.2, i);
+            Line yLine = new Line(rP_y1, rP_y2);
+            drawLine(lineDrawer, yLine, Color.LIGHT_GRAY);
+            ScreenPoint sP = scrConv.r2s(rP_y2);
+            graphics.drawString(Integer.toString(i), sP.getX(), sP.getY());
+        }
+    }
+
+    private void drawAll(PixelDrawer pixelDrawer, LineDrawer ld, CircleDrawer circleDrawer,
+                         ArcDrawer arcDrawer, RectangleDrawer rectangleDrawer, EllipseDrawer ellipseDrawer) {
         for (Line l : lines) {
             drawLine(ld, l, Color.BLACK);
         }
@@ -313,38 +371,6 @@ public class MainPanel extends JPanel implements MouseListener, MouseMotionListe
             currentEllipse.drawMarkers(ld);
         }
 
-        bi_g.dispose();
-        g.drawImage(bi, 0, 0, null);
-    }
-
-    private void drawLine(LineDrawer ld, Line l, Color color) {
-        ld.drawLine(scrConv.r2s(l.getP1()), scrConv.r2s(l.getP2()), color);
-    }
-
-    private void drawCoordinates(LineDrawer lineDrawer, Line xAxis, Line yAxis, int w, int h, Graphics graphics) {
-        Line xL = new Line(new RealPoint(xAxis.getP1().getX() - scrConv.getRealW() / 2, xAxis.getP1().getY()),
-                new RealPoint(xAxis.getP2().getX() + scrConv.getRealW() / 2, xAxis.getP2().getY()));
-        Line yL = new Line(new RealPoint(yAxis.getP1().getX(), yAxis.getP1().getY() - scrConv.getRealH() / 2),
-                new RealPoint(yAxis.getP2().getX(), yAxis.getP2().getY() + scrConv.getRealH() / 2));
-        drawLine(lineDrawer, xL, Color.LIGHT_GRAY);
-        drawLine(lineDrawer, yL, Color.LIGHT_GRAY);
-        for (int i = -w / 2; i < w / 2; i++) {
-            RealPoint rP_x1 = new RealPoint(i, xAxis.getP1().getY() - 0.2);
-            RealPoint rP_x2 = new RealPoint(i, xAxis.getP1().getY() + 0.2);
-            Line xLine = new Line(rP_x1, rP_x2);
-            drawLine(lineDrawer, xLine, Color.LIGHT_GRAY);
-
-            ScreenPoint sP = scrConv.r2s(rP_x1);
-            graphics.drawString(Integer.toString(i), sP.getX(), sP.getY());
-        }
-        for (int i = -h / 2; i < h / 2; i++) {
-            RealPoint rP_y1 = new RealPoint(yAxis.getP1().getX() - 0.2, i);
-            RealPoint rP_y2 = new RealPoint(yAxis.getP1().getX() + 0.2, i);
-            Line yLine = new Line(rP_y1, rP_y2);
-            drawLine(lineDrawer, yLine, Color.LIGHT_GRAY);
-            ScreenPoint sP = scrConv.r2s(rP_y2);
-            graphics.drawString(Integer.toString(i), sP.getX(), sP.getY());
-        }
     }
 
     @Override
